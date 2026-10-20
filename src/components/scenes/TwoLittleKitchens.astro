@@ -1,0 +1,273 @@
+---
+/**
+ * Scene 4: Two Little Kitchens. Mary And Squares and Mary And Bakes as two
+ * pink window boxes. Tapping "Lift the lid" springs the lid up and the bakes
+ * pop out. Squares shows the five flavours as tiny cakes you can flip.
+ * Without JS both boxes are simply open.
+ */
+import { Image } from 'astro:assets';
+import Scene from '../ui/Scene.astro';
+import WhatsAppButton from '../ui/WhatsAppButton.astro';
+import { copy } from '../../data/copy.en';
+import { site } from '../../data/site';
+import { bySubBrand } from '../../data/products';
+import squaresLockup from '../../assets/brand/sub-brands/squares-lockup.svg';
+import bakesLockup from '../../assets/brand/sub-brands/bakes-lockup.svg';
+import marySquares from '../../assets/brand/mascot/mary-square-bento.svg';
+import maryBakes from '../../assets/brand/mascot/mary-cookie-box.svg';
+
+const t = copy.kitchens;
+
+const boxes = [
+  {
+    key: 'squares',
+    name: site.subBrands.squares,
+    lockup: squaresLockup,
+    mary: marySquares,
+    line: t.squares.line,
+    whatsapp: t.squares.whatsapp,
+    items: bySubBrand('squares'),
+    flippable: true,
+  },
+  {
+    key: 'bakes',
+    name: site.subBrands.bakes,
+    lockup: bakesLockup,
+    mary: maryBakes,
+    line: t.bakes.line,
+    whatsapp: t.bakes.whatsapp,
+    items: bySubBrand('bakes'),
+    flippable: false,
+  },
+];
+---
+
+<Scene id="kitchens" name="kitchens" tone="cream" pattern="cream" labelledby="kitchens-title" class="kitchens">
+  <header class="kitchens__head">
+    <p class="label kitchens__eyebrow">{t.eyebrow}</p>
+    <h2 id="kitchens-title" class="kitchens__title">{t.title}</h2>
+  </header>
+
+  <div class="kitchens__boxes">
+    {
+      boxes.map((box) => (
+        <article class:list={['kbox', `kbox--${box.key}`]} data-box data-open="true" aria-labelledby={`kbox-${box.key}`}>
+          <div class="kbox__stage">
+            <div class="kbox__inside" id={`kbox-${box.key}-inside`}>
+              {box.flippable && <p class="kbox__hint label">{t.flipHint}</p>}
+              <ul class:list={['kbox__items', box.flippable && 'kbox__items--flip']}>
+                {box.items.map((item) =>
+                  box.flippable ? (
+                    <li>
+                      <button type="button" class="flip" aria-pressed="false" data-flip>
+                        <span class="flip__face flip__front">
+                          <Image src={item.drawing} alt="" class="flip__art" />
+                          <span class="flip__name" aria-hidden="true">{item.name}</span>
+                        </span>
+                        <span class="flip__face flip__back" aria-hidden="true">
+                          <span class="flip__line">{item.line}</span>
+                        </span>
+                        <span class="sr-only">
+                          {t.flip}: {item.name}. {item.line}
+                        </span>
+                      </button>
+                    </li>
+                  ) : (
+                    <li class="treat">
+                      <Image src={item.drawing} alt="" class="treat__art" />
+                      <span class="treat__name">{item.name}</span>
+                    </li>
+                  ),
+                )}
+              </ul>
+            </div>
+
+            <div class="kbox__body">
+              <span class="kbox__lid" aria-hidden="true">
+                <span class="kbox__ribbon" />
+              </span>
+              <div class="kbox__label">
+                <h3 id={`kbox-${box.key}`} class="sr-only">
+                  {box.name}
+                </h3>
+                <Image src={box.lockup} alt="" class="kbox__lockup" />
+              </div>
+              <Image src={box.mary} alt="" class="kbox__mary" />
+            </div>
+          </div>
+
+          <p class="kbox__line">{box.line}</p>
+          <div class="kbox__actions">
+            <button
+              type="button"
+              class="btn kbox__toggle"
+              aria-expanded="true"
+              aria-controls={`kbox-${box.key}-inside`}
+              data-label-open={t.close}
+              data-label-closed={t.open}
+              data-lid-toggle
+            >
+              {t.close}
+            </button>
+            <WhatsAppButton label={copy.cta.saveBox} message={box.whatsapp} />
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</Scene>
+
+<style>
+  .kitchens__head {
+    display: grid;
+    gap: 0.5rem;
+    max-inline-size: 72rem;
+    margin-inline: auto;
+    margin-block-end: clamp(1.5rem, 1rem + 2vw, 3rem);
+    text-align: center;
+    justify-items: center;
+  }
+  .kitchens__eyebrow { color: var(--color-red-velvet); }
+  .kitchens__title { font-size: var(--text-headline); }
+
+  .kitchens__boxes {
+    display: grid;
+    gap: clamp(3rem, 2rem + 4vw, 5rem);
+    max-inline-size: 72rem;
+    margin-inline: auto;
+  }
+
+  .kbox { display: grid; justify-items: center; gap: 1rem; text-align: center; }
+
+  .kbox__stage {
+    position: relative;
+    display: grid;
+    inline-size: min(88vw, 26rem);
+  }
+
+  /* What's inside: pops up out of the box when the lid lifts. */
+  .kbox__inside {
+    position: relative;
+    z-index: 1;
+    padding: 1rem 0.5rem 2.5rem;
+    margin-block-end: -2rem;
+    transition: transform 620ms var(--ease-spring), opacity 300ms var(--ease-soft);
+  }
+  .kbox[data-open='false'] .kbox__inside {
+    transform: translateY(45%) scale(0.9);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 380ms var(--ease-soft), opacity 240ms var(--ease-soft), visibility 0s 380ms;
+  }
+  .kbox__hint { color: var(--color-muted); margin-block-end: 0.75rem; }
+
+  .kbox__items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Squares: tiny flip cards */
+  .flip {
+    position: relative;
+    display: block;
+    inline-size: 5.5rem;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    background: none;
+    perspective: 600px;
+    transform-style: preserve-3d;
+  }
+  .flip__face {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 0.4rem;
+    border-radius: var(--radius-sm);
+    border: var(--border-line) solid var(--color-cocoa);
+    background: var(--color-paper);
+    backface-visibility: hidden;
+    transition: transform 560ms var(--ease-spring);
+  }
+  .flip__front { grid-template-rows: 1fr auto; }
+  .flip__front :global(.flip__art) { inline-size: 70%; block-size: 100%; object-fit: contain; }
+  .flip__name { font-weight: 900; font-size: 0.7rem; line-height: 1.1; }
+  .flip__back {
+    transform: rotateY(180deg);
+    background: var(--color-blush);
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  .flip[aria-pressed='true'] .flip__front { transform: rotateY(-180deg); }
+  .flip[aria-pressed='true'] .flip__back { transform: rotateY(0deg); }
+
+  /* Bakes: little treats */
+  .treat { display: grid; justify-items: center; gap: 0.25rem; inline-size: 5.75rem; }
+  .treat :global(.treat__art) { inline-size: 4.5rem; transition: transform 400ms var(--ease-spring); }
+  .treat:hover :global(.treat__art) { transform: rotate(-8deg) scale(1.08); }
+  .treat__name { font-weight: 900; font-size: 0.75rem; line-height: 1.15; }
+
+  /* The pink window box */
+  .kbox__body {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    min-block-size: 9rem;
+    padding: 1.5rem 1rem;
+    border-radius: 0.75rem 0.75rem var(--radius-lg) var(--radius-lg);
+    background: var(--color-mary-pink);
+    border: var(--border-line) solid var(--color-cocoa);
+    box-shadow: inset 0 -12px 0 color-mix(in srgb, var(--color-rose) 45%, transparent);
+  }
+  .kbox__lid {
+    position: absolute;
+    inset-inline: -5%;
+    inset-block-end: calc(100% - 6px);
+    block-size: 2.25rem;
+    border-radius: 0.9rem 0.9rem 0.4rem 0.4rem;
+    background: var(--color-mary-pink);
+    border: var(--border-line) solid var(--color-cocoa);
+    transform-origin: 100% 100%;
+    transition: transform 620ms var(--ease-spring);
+  }
+  .kbox__ribbon {
+    position: absolute;
+    inset-block: -3px;
+    inset-inline-start: 46%;
+    inline-size: 8%;
+    background: var(--color-red-velvet);
+    border-inline: var(--border-line) solid var(--color-cocoa);
+  }
+  .kbox[data-open='true'] .kbox__lid { transform: rotate(104deg); }
+
+  .kbox__label {
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-md);
+    border: var(--border-line) solid var(--color-cocoa);
+    background: var(--color-cream);
+  }
+  .kbox--bakes .kbox__label { background: var(--color-cocoa); }
+  .kbox__label :global(.kbox__lockup) { block-size: 3rem; inline-size: auto; }
+
+  .kbox__body :global(.kbox__mary) {
+    position: absolute;
+    inset-block-end: -0.5rem;
+    inset-inline-end: -14%;
+    inline-size: 5.5rem;
+  }
+
+  .kbox__line { max-inline-size: 26rem; margin-block-start: 0.75rem; font-weight: 700; }
+  .kbox__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+
+  @media (min-width: 900px) {
+    .kitchens__boxes { grid-template-columns: 1fr 1fr; align-items: end; }
+  }
+</style>
