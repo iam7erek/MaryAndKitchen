@@ -1,0 +1,243 @@
+---
+/**
+ * Scene 2: Fresh Off the Tray. The whole menu sits on one long baking tray.
+ * Desktop (motion allowed): the section pins and the tray slides sideways with
+ * the scroll. Phones and reduced motion: the tray is a native swipeable row.
+ * Each bake is its cartoon drawing on a parchment sheet; tapping (or hovering
+ * on desktop) lifts the sheet off to show the real photo underneath.
+ */
+import { Image } from 'astro:assets';
+import Scene from '../ui/Scene.astro';
+import { copy } from '../../data/copy.en';
+import { products } from '../../data/products';
+import maryTray from '../../assets/brand/mascot/mary-bestseller-tray.svg';
+import seal from '../../assets/brand/stamps/seal-cocoa.svg';
+
+const t = copy.tray;
+---
+
+<Scene id="menu" name="tray" tone="blush" labelledby="tray-title" class="tray-scene">
+  <div class="tray-scene__pin" data-pin>
+    <header class="tray-scene__head">
+      <p class="label tray-scene__eyebrow">{t.eyebrow}</p>
+      <h2 id="tray-title" class="tray-scene__title">{t.title}</h2>
+      <p class="tray-scene__line">{t.line}</p>
+    </header>
+
+    <div class="tray" data-viewport>
+      <ul class="tray__track" data-track>
+        <li class="tray__mary" aria-hidden="true">
+          <Image src={maryTray} alt="" class="tray__mary-img" />
+          <Image src={seal} alt="" class="tray__seal" />
+        </li>
+        {
+          products.map((p) => (
+            <li class="bake" data-bake data-open="false">
+              <div class="bake__plate">
+                <div class:list={['bake__under', !p.photo && 'bake__under--soon']}>
+                  {p.photo ? (
+                    <Image
+                      src={p.photo}
+                      alt={p.photoAlt ?? p.name}
+                      widths={[280, 420, 560]}
+                      sizes="(min-width: 768px) 17rem, 68vw"
+                      class="bake__photo"
+                    />
+                  ) : (
+                    <p>{t.noPhoto}</p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  class="bake__sheet"
+                  aria-pressed="false"
+                  aria-label={`${t.showPhoto} ${p.name}`}
+                  data-label-open={`${t.showDrawing} ${p.name}`}
+                  data-label-closed={`${t.showPhoto} ${p.name}`}
+                  data-peek
+                >
+                  <Image src={p.drawing} alt="" class="bake__drawing" />
+                </button>
+                {p.bestseller && <span class="bake__badge label">{t.bestseller}</span>}
+              </div>
+              <h3 class="bake__name">{p.name}</h3>
+              <p class="bake__line">{p.line}</p>
+              <p class="bake__price">
+                <span class="bake__amount">
+                  {t.currency} {p.price}
+                </span>
+                <span class="label bake__unit">{p.unit}</span>
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <p class="tray-scene__hint label" aria-hidden="true">{t.hint} →</p>
+  </div>
+</Scene>
+
+<style>
+  .tray-scene { overflow-x: clip; }
+
+  .tray-scene__pin {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.25rem, 0.5rem + 2vw, 2rem);
+  }
+  .tray-scene__head {
+    display: grid;
+    gap: 0.5rem;
+    max-inline-size: 72rem;
+    inline-size: 100%;
+    margin-inline: auto;
+  }
+  .tray-scene__eyebrow { color: var(--color-red-velvet); }
+  .tray-scene__title { font-size: var(--text-headline); }
+  .tray-scene__line { font-size: var(--text-lead); }
+  .tray-scene__hint { justify-self: center; color: var(--color-muted); }
+
+  /* The tray: a long rimmed baking sheet. Native swipe by default. */
+  .tray {
+    min-inline-size: 0;
+    margin-inline: calc(-1 * max(1rem, env(safe-area-inset-left)));
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-block: 2.5rem 1.5rem;
+  }
+  .tray::-webkit-scrollbar { display: none; }
+
+  .tray__track {
+    display: flex;
+    gap: clamp(1rem, 0.5rem + 2vw, 2rem);
+    inline-size: max-content;
+    margin-block: 0;
+    margin-inline: max(1rem, env(safe-area-inset-left));
+    padding: 2rem clamp(1.5rem, 1rem + 3vw, 3rem) 2.25rem;
+    list-style: none;
+    border-radius: 2.5rem;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 46px, color-mix(in srgb, var(--color-biscuit) 22%, transparent) 46px 48px),
+      var(--color-paper);
+    border: var(--border-line) solid var(--color-cocoa);
+    box-shadow: inset 0 0 0 10px var(--color-cream), inset 0 0 0 13px var(--color-cocoa);
+  }
+
+  .tray__mary {
+    position: relative;
+    display: grid;
+    align-items: end;
+    inline-size: clamp(9rem, 30vw, 13rem);
+    scroll-snap-align: start;
+  }
+  .tray__mary :global(.tray__mary-img) { inline-size: 100%; }
+  .tray__mary :global(.tray__seal) {
+    position: absolute;
+    inset-inline-end: -1rem;
+    inset-block-start: 0;
+    inline-size: 4.5rem;
+    transform: rotate(12deg);
+  }
+
+  /* ---------- One bake ---------- */
+  .bake {
+    display: grid;
+    align-content: start;
+    gap: 0.4rem;
+    inline-size: min(68vw, 17rem);
+    scroll-snap-align: center;
+  }
+  .bake__plate {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    margin-block-end: 0.5rem;
+  }
+  .bake__under {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    border: var(--border-line) solid var(--color-cocoa);
+    background: var(--color-cream);
+  }
+  .bake__under :global(.bake__photo) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+  .bake__under--soon {
+    display: grid;
+    place-items: end center;
+    padding: 1.25rem;
+    text-align: center;
+    font-weight: 800;
+    color: var(--color-muted);
+  }
+
+  /* The parchment sheet with the drawing. Lifts off to reveal the photo. */
+  .bake__sheet {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    padding: 14%;
+    border-radius: var(--radius-lg);
+    border: var(--border-line) solid var(--color-cocoa);
+    background:
+      radial-gradient(circle at 30% 20%, var(--color-paper) 0 40%, transparent 41%),
+      var(--color-cream);
+    box-shadow: 0 6px 0 var(--color-cocoa);
+    transform-origin: 80% 10%;
+    transition: transform 520ms var(--ease-spring);
+  }
+  .bake__sheet :global(.bake__drawing) { inline-size: 100%; block-size: 100%; object-fit: contain; }
+  .bake[data-open='true'] .bake__sheet {
+    transform: translate(26%, -34%) rotate(11deg) scale(0.48);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .bake:hover .bake__sheet { transform: translate(26%, -34%) rotate(11deg) scale(0.48); }
+  }
+
+  .bake__badge {
+    position: absolute;
+    z-index: 2;
+    inset-inline-start: -0.5rem;
+    inset-block-start: 1rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-red-velvet);
+    color: var(--color-cream);
+    border: 2px solid var(--color-cocoa);
+    transform: rotate(-6deg);
+  }
+
+  .bake__name {
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+  .bake__line { color: var(--color-muted); font-size: var(--text-caption); font-weight: 700; }
+  .bake__price { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+  .bake__amount {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 1.6rem;
+    color: var(--color-rose);
+  }
+  .bake__unit { color: var(--color-cocoa); }
+
+  /* Pinned desktop mode (set by tray.ts): the track moves, not the scroller. */
+  :global(.tray-scene.is-pinned) .tray { overflow: visible; scroll-snap-type: none; }
+  :global(.tray-scene.is-pinned) .tray-scene__hint { visibility: hidden; }
+  :global(.tray-scene.is-pinned) .tray-scene__pin {
+    min-block-size: 100svh;
+    align-content: center;
+    padding-block-start: 4.5rem; /* clear the nav pill */
+  }
+</style>
