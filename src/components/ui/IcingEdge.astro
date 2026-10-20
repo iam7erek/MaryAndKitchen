@@ -1,0 +1,30 @@
+---
+/**
+ * Piped-icing divider: brand/elements/icing-edge.svg repeated along the edge.
+ * Drips hang down from the bottom of a pink scene into the next one.
+ */
+import scallop from '../../assets/brand/elements/icing-edge.svg';
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<div
+  class:list={['icing-edge', className]}
+  style={`--icing: url(${scallop.src})`}
+  aria-hidden="true"
+>
+</div>
+
+<style>
+  .icing-edge {
+    block-size: 34px;
+    background-image: var(--icing);
+    background-repeat: repeat-x;
+    background-size: 28px 34px;
+    background-position: center top;
+    pointer-events: none;
+  }
+</style>

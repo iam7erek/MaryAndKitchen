@@ -1,0 +1,67 @@
+---
+/**
+ * Shared wrapper for every kitchen scene.
+ * - name: matches a module in scripts/motion/scenes/<name>.ts (loaded lazily).
+ * - tone: background from the brand palette. Text on pink stays cocoa.
+ * - pattern: optional sprinkle tile from brand/pattern.
+ * - drip: piped-icing edge hanging from the bottom (pink scenes).
+ */
+import IcingEdge from './IcingEdge.astro';
+import tilePink from '../../assets/brand/pattern/sprinkle-tile-pink.svg';
+import tileCream from '../../assets/brand/pattern/sprinkle-tile-cream.svg';
+import tileCocoa from '../../assets/brand/pattern/sprinkle-tile-cocoa.svg';
+
+type Tone = 'cream' | 'paper' | 'blush' | 'pink' | 'cocoa';
+
+interface Props {
+  id: string;
+  name?: string;
+  tone?: Tone;
+  pattern?: 'pink' | 'cream' | 'cocoa';
+  drip?: boolean;
+  labelledby?: string;
+  class?: string;
+}
+
+const { id, name, tone = 'cream', pattern, drip = false, labelledby, class: className } =
+  Astro.props;
+
+const tiles = { pink: tilePink, cream: tileCream, cocoa: tileCocoa };
+const tile = pattern ? tiles[pattern].src : undefined;
+---
+
+<section
+  id={id}
+  data-scene={name}
+  aria-labelledby={labelledby}
+  class:list={['scene', `scene--${tone}`, tile && 'scene--pattern', className]}
+  style={tile ? `--tile: url(${tile})` : undefined}
+>
+  <slot />
+  {drip && <IcingEdge class="scene__drip" />}
+</section>
+
+<style>
+  .scene {
+    position: relative;
+    isolation: isolate;
+    padding-block: clamp(4rem, 3rem + 6vw, 9rem);
+    padding-inline: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right));
+  }
+  .scene--cream { background-color: var(--color-cream); }
+  .scene--paper { background-color: var(--color-paper); }
+  .scene--blush { background-color: var(--color-blush); }
+  .scene--pink { background-color: var(--color-mary-pink); color: var(--color-cocoa); }
+  .scene--cocoa { background-color: var(--color-cocoa); color: var(--color-cream); }
+  .scene--pattern {
+    background-image: var(--tile);
+    background-size: 200px 200px;
+    background-repeat: repeat;
+  }
+  .scene :global(.scene__drip) {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 100%;
+    z-index: 2;
+  }
+</style>

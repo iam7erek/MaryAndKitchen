@@ -1,0 +1,131 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* Self-hosted fonts, latin subset only. Fraunces "soft" files carry the
+   wght + SOFT axes; italic 700 is the headline voice. */
+@font-face {
+  font-family: 'Fraunces';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../assets/fonts/fraunces-latin-soft-italic.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../assets/fonts/fraunces-latin-soft-normal.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url('../assets/fonts/nunito-latin-wght-normal.woff2') format('woff2-variations');
+}
+
+@layer base {
+  html {
+    background: var(--color-cream);
+    color: var(--color-cocoa);
+    font-family: var(--font-body);
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    min-block-size: 100dvh;
+    font-size: var(--text-body);
+    line-height: 1.6;
+    overflow-x: clip;
+  }
+  h1, h2, h3, .display {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-weight: 700;
+    font-style: italic;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  img, svg { display: block; max-inline-size: 100%; block-size: auto; }
+  button { cursor: pointer; }
+
+  :focus-visible {
+    outline: 3px solid var(--color-rose);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  ::selection { background: var(--color-blush); color: var(--color-cocoa); }
+}
+
+@layer components {
+  /* Small-caps label: Nunito 900, tracked. */
+  .label {
+    font-family: var(--font-body);
+    font-size: var(--text-label);
+    font-weight: 900;
+    letter-spacing: var(--text-label--letter-spacing);
+    text-transform: uppercase;
+  }
+  .short-line {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-style: normal;
+    font-weight: 500;
+  }
+  .skip-link {
+    position: absolute;
+    inset-inline-start: 1rem;
+    inset-block-start: -4rem;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-paper);
+    border: var(--border-line) solid var(--color-cocoa);
+    font-weight: 800;
+    transition: inset-block-start var(--duration-quick) var(--ease-soft);
+  }
+  .skip-link:focus-visible { inset-block-start: 1rem; }
+
+  /* Pill button: 44px+ touch target, cocoa outline, springy press. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-block-size: 48px;
+    padding-inline: 1.5rem;
+    border-radius: var(--radius-pill);
+    border: var(--border-line) solid var(--color-cocoa);
+    background: var(--color-paper);
+    color: var(--color-cocoa);
+    font-weight: 900;
+    font-size: 1rem;
+    text-decoration: none;
+    box-shadow: 0 4px 0 var(--color-cocoa);
+    transition: transform var(--duration-quick) var(--ease-spring),
+      box-shadow var(--duration-quick) var(--ease-soft);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--color-cocoa); }
+  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--color-cocoa); }
+  .btn--pink { background: var(--color-mary-pink); }
+}
+
+/* Lenis (desktop only, see scripts/motion/core.ts) */
+html.lenis, html.lenis body { block-size: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+.lenis [data-lenis-prevent] { overscroll-behavior: contain; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,48 @@
+---
+/**
+ * Inlines a brand SVG so GSAP can reach its groups.
+ * Usage: import raw from '../../assets/brand/products/x.svg?raw'
+ *        <InlineSvg svg={raw} class="..." />
+ * - decorative: hides it from assistive tech (alt text lives elsewhere).
+ * - label: replaces the file's own <title> for screen readers.
+ * - idSuffix: needed if the same file is inlined twice on one page; rewrites
+ *   every id and its references so they stay unique.
+ */
+interface Props {
+  svg: string;
+  class?: string;
+  decorative?: boolean;
+  label?: string;
+  idSuffix?: string;
+  [key: `data-${string}`]: string | undefined;
+}
+
+const { svg, class: className, decorative = false, label, idSuffix, ...rest } = Astro.props;
+
+let markup = svg.trim();
+
+if (idSuffix) {
+  markup = markup
+    .replace(/\bid="([^"]+)"/g, `id="$1-${idSuffix}"`)
+    .replace(/url\(#([^)]+)\)/g, `url(#$1-${idSuffix})`)
+    .replace(/href="#([^"]+)"/g, `href="#$1-${idSuffix}"`);
+}
+
+if (label) {
+  markup = markup.replace(/<title>[\s\S]*?<\/title>/, `<title>${label}</title>`);
+}
+
+const extra: string[] = [];
+if (className) extra.push(`class="${className}"`);
+for (const [key, value] of Object.entries(rest)) {
+  if (value !== undefined) extra.push(`${key}="${value}"`);
+}
+if (decorative) {
+  markup = markup.replace(/\srole="img"/, '').replace(/<title>[\s\S]*?<\/title>/, '');
+  extra.push('aria-hidden="true"', 'focusable="false"');
+}
+
+markup = markup.replace(/^<svg\b/, `<svg ${extra.join(' ')}`);
+---
+
+<Fragment set:html={markup} />

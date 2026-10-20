@@ -1,0 +1,49 @@
+/*
+ * Mary And Kitchen design tokens. Single source of truth.
+ * Values come from the brand identity (MANIFEST.md + brand PDF, "Color & type"
+ * and "Brand guideline" pages). Tailwind's default palette is removed on
+ * purpose so only brand colours can be used (no purple, no pure black).
+ */
+@theme static {
+  --color-*: initial;
+  --color-cream: #fff5ea;      /* default background, ~40% */
+  --color-paper: #fffdf9;      /* lightest surface */
+  --color-mary-pink: #ef7fa5;  /* hero colour, ~25% */
+  --color-blush: #fbd5e0;      /* soft grounds, ~10% */
+  --color-cocoa: #3f241e;      /* all body text and outlines, ~15% */
+  --color-rose: #d9577f;       /* big type only (24px+): wordmark, headlines, prices */
+  --color-red-velvet: #a8263b; /* small accent, labels */
+  --color-pistachio: #b8cf9c;  /* small accent, "fresh" */
+  --color-biscuit: #d9a062;    /* illustrations */
+  --color-muted: #7a5a50;      /* captions */
+  --color-skin: #dda77f;       /* Mary's skin, inside artwork only */
+
+  --font-*: initial;
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-body: 'Nunito', ui-rounded, 'Segoe UI', system-ui, sans-serif;
+
+  /* Fluid type ramp, mobile first (360px) to desktop (1440px). */
+  --text-label: 0.75rem;
+  --text-label--letter-spacing: 0.16em;
+  --text-caption: 0.875rem;
+  --text-body: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lead: clamp(1.125rem, 1rem + 0.6vw, 1.375rem);
+  --text-title: clamp(1.75rem, 1.3rem + 2.2vw, 3rem);
+  --text-headline: clamp(2.5rem, 1.6rem + 4.5vw, 5.5rem);
+  --text-display: clamp(3.25rem, 2rem + 6.5vw, 8rem);
+
+  /* Corners: always rounded, 12 to 24px; pills for tags and buttons. */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  /* Outlines match the thick cocoa line of the artwork. */
+  --border-line: 3px;
+
+  /* Motion: soft like dough. GSAP uses the same curves (scripts/motion/core.ts). */
+  --ease-soft: cubic-bezier(0.5, 1, 0.89, 1);     /* power2.out */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1); /* ~back.out(1.4) */
+  --duration-quick: 180ms;
+  --duration-soft: 420ms;
+}
