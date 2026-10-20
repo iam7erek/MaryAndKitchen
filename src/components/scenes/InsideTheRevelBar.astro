@@ -1,0 +1,329 @@
+---
+/**
+ * Scene 3: Inside the Revel Bar.
+ * Exploded view of the real cross-section artwork (diagram-design "exploded"
+ * type): one vertical axis, one label per layer, the fudge is the one focal
+ * layer. Each layer is the brand file's own group, shown in its own crop of
+ * the original coordinates so the three crops line up exactly into one bar.
+ *
+ * The HTML is the exploded, labelled frame (what reduced motion and no-JS
+ * see). scripts/motion/scenes/revelBar.ts collapses it into the whole bar and
+ * scrubs the story with the scroll.
+ */
+import { Image } from 'astro:assets';
+import Scene from '../ui/Scene.astro';
+import WhatsAppButton from '../ui/WhatsAppButton.astro';
+import { copy } from '../../data/copy.en';
+import raw from '../../assets/brand/products/oat-revel-bar-cross-section.svg?raw';
+import badge from '../../assets/brand/elements/badge-real-oats.svg';
+import photo from '../../assets/brand/photos/revel-bars-top.jpg';
+
+const t = copy.revelBar;
+
+// Pull each layer's <g> out of the brand file, untouched.
+const groups = new Map<string, string>();
+for (const match of raw.matchAll(/<g id="oat-revel-bar-cross-section-([a-z-]+)"[^>]*>[\s\S]*?<\/g>/g)) {
+  groups.set(match[1], match[0]);
+}
+
+// Crop of the original coordinates for each layer. Same x range for all three
+// so they render at the same scale; y ranges come from the artwork itself.
+const X0 = -36;
+const W = 78;
+const crops: Record<string, { y: number; h: number }> = {
+  'crumble-top': { y: -26, h: 31 },
+  'fudge-middle': { y: -18, h: 48 },
+  'oat-base': { y: 14, h: 16 },
+};
+
+const layers = t.layers.map((layer) => ({
+  ...layer,
+  crop: crops[layer.key],
+  svg: groups.get(layer.key) ?? '',
+  focal: layer.key === 'fudge-middle',
+}));
+
+// Little oat flakes that drift off the crumble (decoration, hidden at rest).
+const flakes = [
+  { x: 12, y: 30, r: -20 },
+  { x: 30, y: 12, r: 25 },
+  { x: 52, y: 22, r: -10 },
+  { x: 70, y: 8, r: 30 },
+  { x: 86, y: 26, r: -25 },
+];
+---
+
+<Scene id="revel-bar" name="revelBar" tone="cream" labelledby="revel-title" class="revel">
+  <div class="revel__pin" data-pin>
+    <header class="revel__head">
+      <p class="label revel__eyebrow">{t.eyebrow}</p>
+      <h2 id="revel-title" class="revel__title">{t.title}</h2>
+      <p class="revel__line">{t.line}</p>
+    </header>
+
+    <div class="revel__body">
+      <figure class="revel__figure" aria-labelledby="revel-fig-title" aria-describedby="revel-fig-desc">
+        <figcaption class="sr-only">
+          <span id="revel-fig-title">{t.diagramTitle}</span>
+          <span id="revel-fig-desc">{t.diagramDesc}</span>
+        </figcaption>
+
+        <Image src={badge} alt={t.badgeAlt} class="revel__badge" data-badge />
+
+        <div class="revel__layers" data-layers>
+          {
+            layers.map((layer) => (
+              <div
+                class:list={['layer', `layer--${layer.key}`, layer.focal && 'layer--focal']}
+                data-layer={layer.key}
+                data-crop-y={layer.crop.y}
+              >
+                <div class="layer__art" data-art>
+                  <svg
+                    viewBox={`${X0} ${layer.crop.y} ${W} ${layer.crop.h}`}
+                    aria-hidden="true"
+                    focusable="false"
+                    set:html={layer.svg}
+                  />
+                  {layer.key !== 'oat-base' && <span class="layer__shadow" data-shadow />}
+                  {layer.focal && (
+                    <span class="layer__gloss" aria-hidden="true">
+                      <span class="layer__shine" data-shimmer />
+                    </span>
+                  )}
+                  {layer.key === 'crumble-top' &&
+                    flakes.map((f) => (
+                      <span
+                        class="layer__flake"
+                        data-flake
+                        style={`inset-inline-start: ${f.x}%; inset-block-start: ${f.y}%; --r: ${f.r}deg`}
+                      />
+                    ))}
+                </div>
+                <svg class="layer__leader" viewBox="0 0 64 12" aria-hidden="true" focusable="false">
+                  <circle cx="4" cy="6" r="3" />
+                  <path data-leader pathLength="1" d="M10 6q6-4 12 0t12 0 12 0 12 0" />
+                </svg>
+                <p class="layer__label" data-label>
+                  <span class="layer__name">{layer.name}</span>
+                  <span class="layer__detail">{layer.detail}</span>
+                </p>
+              </div>
+            ))
+          }
+        </div>
+      </figure>
+
+      <aside class="revel__photo" data-photo>
+        <div class="revel__polaroid">
+          <Image
+            src={photo}
+            alt={t.photoAlt}
+            widths={[320, 480, 640]}
+            sizes="(min-width: 768px) 20rem, 80vw"
+            class="revel__img"
+          />
+          <p class="revel__caption">{t.photoCaption}</p>
+        </div>
+        <WhatsAppButton label={copy.cta.saveBoxOf10} message={t.whatsapp} />
+      </aside>
+    </div>
+  </div>
+</Scene>
+
+<style>
+  .revel { overflow-x: clip; }
+
+  .revel__pin {
+    display: grid;
+    grid-template-areas: 'head' 'figure' 'photo';
+    gap: clamp(1.25rem, 0.75rem + 2vw, 2.5rem);
+    max-inline-size: 72rem;
+    margin-inline: auto;
+  }
+  .revel__head { grid-area: head; }
+  .revel__figure { grid-area: figure; }
+  .revel__photo { grid-area: photo; }
+  .revel__body { display: contents; }
+
+  .revel__head { display: grid; gap: 0.6rem; max-inline-size: 36rem; }
+  .revel__eyebrow { color: var(--color-red-velvet); }
+  .revel__title { font-size: var(--text-headline); color: var(--color-rose); }
+  .revel__line { font-size: var(--text-lead); }
+
+  .revel__figure {
+    position: relative;
+    margin: 0;
+  }
+
+  .revel__figure :global(.revel__badge) {
+    position: absolute;
+    z-index: 5;
+    inset-inline-end: 0;
+    inset-block-start: -0.5rem;
+    inline-size: clamp(4.5rem, 3rem + 6vw, 7rem);
+    transform: rotate(-8deg);
+  }
+  @media (min-width: 768px) {
+    .revel__figure :global(.revel__badge) { inset-block-start: auto; inset-block-end: -2.5rem; }
+  }
+
+  .revel__layers {
+    display: grid;
+    gap: clamp(1.25rem, 0.5rem + 2vw, 2rem);
+  }
+
+  /* ---------- One layer: art + leader + label ---------- */
+  .layer {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 0.35rem;
+  }
+  .layer--crumble-top { z-index: 3; }
+  .layer--oat-base { z-index: 2; }
+  .layer--fudge-middle { z-index: 1; }
+
+  .layer__art {
+    position: relative;
+    inline-size: min(64vw, 17rem);
+  }
+  .layer__art svg { inline-size: 100%; overflow: visible; }
+
+  .layer__shadow {
+    position: absolute;
+    inset-inline: 12%;
+    inset-block-start: calc(100% + 0.4rem);
+    block-size: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-cocoa);
+    opacity: 0.14;
+  }
+
+  /* Gloss on the fudge's front face (front rect is x -30..30, y -4..28). */
+  .layer__gloss {
+    position: absolute;
+    inset-inline-start: 7.7%;
+    inline-size: 76.9%;
+    inset-block-start: 29.2%;
+    block-size: 66.7%;
+    overflow: hidden;
+    border-radius: 6px;
+    pointer-events: none;
+  }
+  .layer__shine {
+    position: absolute;
+    inset-block: -10%;
+    inset-inline-start: 0;
+    inline-size: 16%;
+    background: var(--color-paper);
+    opacity: 0;
+    transform: translateX(-200%) skewX(-18deg);
+  }
+
+  .layer__flake {
+    position: absolute;
+    inline-size: 9%;
+    aspect-ratio: 1.9;
+    border-radius: 50%;
+    background: #f6e2b8; /* oat flake, from the artwork */
+    border: 1.5px solid #b88a4e;
+    transform: rotate(var(--r));
+    opacity: 0;
+  }
+
+  .layer__leader {
+    inline-size: 2.5rem;
+    transform: rotate(90deg);
+    overflow: visible;
+  }
+  .layer__leader circle { fill: var(--color-cocoa); }
+  .layer__leader path {
+    fill: none;
+    stroke: var(--color-cocoa);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+  .layer--focal .layer__leader circle { fill: var(--color-rose); }
+  .layer--focal .layer__leader path { stroke: var(--color-rose); }
+
+  .layer__label {
+    display: grid;
+    gap: 0.1rem;
+    text-align: center;
+  }
+  .layer__name {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.15;
+  }
+  .layer__detail { color: var(--color-muted); font-size: var(--text-caption); font-weight: 700; }
+  .layer--focal .layer__detail { color: var(--color-red-velvet); }
+
+  /* ---------- The real photo + CTA ---------- */
+  .revel__photo {
+    display: grid;
+    justify-items: center;
+    gap: 1.25rem;
+  }
+  .revel__polaroid {
+    padding: 0.75rem 0.75rem 0.5rem;
+    background: var(--color-paper);
+    border: var(--border-line) solid var(--color-cocoa);
+    border-radius: var(--radius-md);
+    transform: rotate(2deg);
+    inline-size: min(80vw, 20rem);
+  }
+  .revel__polaroid :global(.revel__img) {
+    inline-size: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+  }
+  .revel__caption {
+    padding-block: 0.5rem 0.25rem;
+    text-align: center;
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-style: italic;
+    font-weight: 600;
+  }
+
+  /* ---------- Desktop: label column beside the bar ---------- */
+  @media (min-width: 768px) {
+    .revel__pin {
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+      grid-template-areas: 'figure head' 'figure photo';
+      align-items: center;
+      column-gap: clamp(2rem, 4vw, 4rem);
+    }
+    .revel__head { align-self: end; }
+    .revel__photo { align-self: start; justify-items: start; }
+    .revel__title { font-size: clamp(2.5rem, 1rem + 3.5vw, 4.5rem); }
+    .revel__polaroid { inline-size: min(24vw, 16rem); }
+    .layer {
+      grid-template-columns: minmax(0, 1fr) 4.5rem minmax(10rem, 14rem);
+      align-items: center;
+      justify-items: start;
+      gap: 0.75rem;
+    }
+    .layer__art { inline-size: 100%; max-inline-size: 22rem; justify-self: end; }
+    .layer__leader { inline-size: 100%; transform: none; }
+    .layer__label { text-align: start; }
+    .layer__name { font-size: 1.4rem; }
+  }
+
+  :global(.sr-only) {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>
