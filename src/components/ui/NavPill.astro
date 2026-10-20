@@ -1,0 +1,128 @@
+---
+/**
+ * Navigation: a small floating cream pill with a cocoa outline. The cookie in
+ * it fills up as you scroll (scripts/motion/scenes/nav.ts). On phones a round
+ * WhatsApp button stays within thumb reach in the bottom corner.
+ */
+import { Image } from 'astro:assets';
+import { copy } from '../../data/copy.en';
+import { whatsappLink } from '../../data/site';
+import logo from '../../assets/brand/logo/on-cream/logo-horizontal.svg';
+import cookie from '../../assets/brand/products/brown-butter-choc-chip.svg';
+
+const t = copy.nav;
+---
+
+<header class="nav" data-scene="nav">
+  <nav class="nav__pill" aria-label="Main">
+    <a href="#main" class="nav__home" aria-label={t.home}>
+      <Image src={logo} alt="" class="nav__logo" loading="eager" />
+    </a>
+    <a href="#menu" class="nav__link">{t.menu}</a>
+    <a href="#order" class="nav__link">{t.order}</a>
+    <span class="nav__cookie" role="img" aria-label={t.progress}>
+      <Image src={cookie} alt="" class="nav__cookie-ghost" loading="eager" />
+      <span class="nav__cookie-fill" data-cookie-fill>
+        <Image src={cookie} alt="" class="nav__cookie-img" loading="eager" />
+      </span>
+    </span>
+  </nav>
+</header>
+
+<a class="wa-fab" href={whatsappLink()} target="_blank" rel="noopener" aria-label={t.whatsapp}>
+  <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" focusable="false">
+    <path
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M4.6 19.4 5.7 16A8 8 0 1 1 8.4 18.6Z M9 9.2c0 3 2.6 5.8 5.8 5.8l1-1.4-1.9-.9-.9.9c-1-.4-2-1.4-2.4-2.4l.9-.9-.9-1.9Z"
+    ></path>
+  </svg>
+</a>
+
+<style>
+  .nav {
+    position: fixed;
+    z-index: 50;
+    inset-block-start: max(0.75rem, env(safe-area-inset-top));
+    inset-inline: 0;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .nav__pill {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.3rem 0.4rem 0.3rem 0.9rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-cream);
+    border: var(--border-line) solid var(--color-cocoa);
+    box-shadow: 0 4px 0 var(--color-cocoa);
+    pointer-events: auto;
+  }
+  .nav__home { display: flex; align-items: center; min-block-size: 44px; padding-inline-end: 0.4rem; }
+  .nav__home :global(.nav__logo) { block-size: 1.9rem; inline-size: auto; }
+  .nav__link {
+    display: grid;
+    place-items: center;
+    min-block-size: 44px;
+    padding-inline: 0.7rem;
+    border-radius: var(--radius-pill);
+    font-weight: 900;
+    font-size: 0.95rem;
+    color: var(--color-cocoa);
+    text-decoration: none;
+    transition: background-color var(--duration-quick) var(--ease-soft);
+  }
+  .nav__link:hover { background: var(--color-blush); }
+
+  /* The cookie that fills up with scroll progress. */
+  .nav__cookie {
+    position: relative;
+    display: block;
+    inline-size: 2.4rem;
+    aspect-ratio: 1;
+    margin-inline-start: 0.2rem;
+  }
+  .nav__cookie :global(.nav__cookie-ghost) { inline-size: 100%; opacity: 0.25; filter: grayscale(1); }
+  .nav__cookie-fill {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+  .nav__cookie-fill :global(.nav__cookie-img) {
+    inline-size: 100%;
+    transform: translateY(var(--fill, 0%));
+  }
+
+  /* Phones: WhatsApp always in thumb reach. */
+  .wa-fab {
+    position: fixed;
+    z-index: 50;
+    inset-inline-end: max(1rem, env(safe-area-inset-right));
+    inset-block-end: max(1rem, env(safe-area-inset-bottom));
+    display: grid;
+    place-items: center;
+    inline-size: 3.5rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--color-mary-pink);
+    color: var(--color-cocoa);
+    border: var(--border-line) solid var(--color-cocoa);
+    box-shadow: 0 4px 0 var(--color-cocoa);
+    transition: transform var(--duration-quick) var(--ease-spring);
+  }
+  .wa-fab:active { transform: translateY(3px); }
+
+  @media (min-width: 768px) {
+    .wa-fab { display: none; }
+  }
+  @media (max-width: 380px) {
+    .nav__home :global(.nav__logo) { block-size: 1.6rem; }
+    .nav__link { padding-inline: 0.5rem; font-size: 0.9rem; }
+  }
+</style>

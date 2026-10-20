@@ -1,0 +1,104 @@
+---
+/**
+ * Scene 8: Mary's Apron, the closing. Instagram, WhatsApp, "delivery across
+ * the UAE" and a tiny Mary waving. No link-wall footer.
+ */
+import { Image } from 'astro:assets';
+import Scene from '../ui/Scene.astro';
+import { copy } from '../../data/copy.en';
+import { site, whatsappLink } from '../../data/site';
+import maryWaving from '../../assets/brand/mascot/mary-waving.svg';
+import wordmark from '../../assets/brand/logo/on-cocoa/logo-wordmark.svg';
+
+const t = copy.apron;
+---
+
+<Scene id="apron" tone="cocoa" pattern="cocoa" labelledby="apron-title" class="apron">
+  <footer class="apron__inner">
+    <Image src={maryWaving} alt="" class="apron__mary" data-wave />
+    <h2 id="apron-title" class="apron__title">{t.title}</h2>
+    <p class="apron__line">{t.line}</p>
+    <ul class="apron__links">
+      <li>
+        <a href={site.instagram.url} target="_blank" rel="noopener" class="apron__link">
+          <span class="apron__handle">{site.instagram.handle}</span>
+          <span class="label">{t.instagram}</span>
+        </a>
+      </li>
+      <li>
+        <a href={whatsappLink()} target="_blank" rel="noopener" class="apron__link">
+          <span class="apron__handle">{site.whatsapp.display}</span>
+          <span class="label">{t.whatsapp}</span>
+        </a>
+      </li>
+    </ul>
+    <p class="apron__delivery label">{t.delivery}</p>
+    <Image src={wordmark} alt={site.name} class="apron__wordmark" />
+    <p class="apron__small">© {new Date().getFullYear()} {t.rights}</p>
+  </footer>
+</Scene>
+
+<style>
+  .apron { padding-block-end: max(5rem, env(safe-area-inset-bottom)); }
+  .apron__inner {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    max-inline-size: 40rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .apron__inner :global(.apron__mary) {
+    inline-size: 7rem;
+    padding: 0.75rem;
+    border-radius: 50%;
+    background: var(--color-blush);
+    border: var(--border-line) solid var(--color-cream);
+  }
+  .apron__title { font-size: var(--text-headline); color: var(--color-mary-pink); }
+  .apron__line { font-size: var(--text-lead); }
+  .apron__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .apron__link {
+    display: grid;
+    gap: 0.2rem;
+    min-block-size: 44px;
+    padding: 0.9rem 1.4rem;
+    border-radius: var(--radius-lg);
+    background: var(--color-cream);
+    color: var(--color-cocoa);
+    border: var(--border-line) solid var(--color-mary-pink);
+    text-decoration: none;
+    transition: transform var(--duration-quick) var(--ease-spring);
+  }
+  .apron__link:hover { transform: translateY(-3px) rotate(-1deg); }
+  .apron__handle {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 1.4rem;
+  }
+  .apron__delivery { color: var(--color-pistachio); }
+  .apron__inner :global(.apron__wordmark) { inline-size: 11rem; margin-block-start: 1.5rem; }
+  .apron__small { font-size: var(--text-caption); opacity: 0.8; }
+
+  /* Mary waves when the apron comes into view (CSS only). */
+  @media (prefers-reduced-motion: no-preference) {
+    .apron__inner :global(.apron__mary) { animation: wave 2.4s var(--ease-soft) 1 both; animation-timeline: view(); animation-range: entry 20% cover 45%; }
+    @keyframes wave {
+      0% { transform: rotate(0deg) scale(0.85); }
+      40% { transform: rotate(-8deg) scale(1); }
+      60% { transform: rotate(6deg); }
+      80% { transform: rotate(-4deg); }
+      100% { transform: rotate(0deg); }
+    }
+  }
+</style>
