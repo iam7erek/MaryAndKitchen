@@ -3,8 +3,9 @@
  * - Registers GSAP + ScrollTrigger once.
  * - Lenis smooth scroll on desktop (fine pointer) only, never under reduced
  *   motion; driven by gsap.ticker and synced with ScrollTrigger.
- * - Lazily imports each scene's module (scripts/motion/scenes/<name>.ts) when
- *   its <section data-scene="<name>"> comes near the viewport.
+ * - Imports each scene's module (scripts/motion/scenes/<name>.ts) for every
+ *   <section data-scene="<name>">: the opening scene first, the rest when the
+ *   browser is idle, then one ScrollTrigger refresh.
  *
  * The HTML of every scene is its complete, final state. Scene modules set
  * their own start states inside gsap.matchMedia(), so no-JS and reduced
@@ -79,24 +80,27 @@ const context: SceneContext = { gsap, ScrollTrigger, ease, media, lenis: () => l
 function loadScene(root: HTMLElement): void {
   const name = root.dataset.scene;
   const loader = name ? modules[`./scenes/${name}.ts`] : undefined;
-  if (!loader) return;
-  loader().then(({ init }) => {
-    init(root, context);
-    ScrollTrigger.refresh();
-  });
+  return loader ? loader().then(({ init }) => init(root, context)) : Promise.resolve();
 }
 
-const observer = new IntersectionObserver(
-  (entries) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      observer.unobserve(entry.target);
-      loadScene(entry.target as HTMLElement);
-    }
-  },
-  { rootMargin: '100% 0px' },
-);
-document.querySelectorAll<HTMLElement>('[data-scene]').forEach((scene) => observer.observe(scene));
+// All scenes are set up once, top to bottom, followed by a single refresh.
+// (Refreshing every time a scene loaded made pinned scenes on screen
+// re-render their start state, which showed up as a flicker.)
+// The opening scene goes first so it can play straight away; the rest load
+// while the browser is idle, well before anyone scrolls to them.
+const scenes = Array.from(document.querySelectorAll<HTMLElement>('[data-scene]'));
+const first = scenes.find((s) => s.dataset.scene === 'doorstep') ?? scenes[0];
+const rest = scenes.filter((s) => s !== first);
+const idle = (fn: () => void) =>
+  'requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 1200 }) : setTimeout(fn, 200);
+
+(first ? loadScene(first) : Promise.resolve()).then(() => {
+  idle(async () => {
+    for (const scene of rest) await loadScene(scene);
+    ScrollTrigger.sort();
+    ScrollTrigger.refresh();
+  });
+});
 
 // Fonts change line lengths, which moves pin positions.
 document.fonts?.ready.then(() => ScrollTrigger.refresh());

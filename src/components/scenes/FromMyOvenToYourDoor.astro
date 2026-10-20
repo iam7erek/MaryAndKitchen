@@ -41,7 +41,6 @@ const mobilePath =
             <rect x="0" y="-20" width="1000" height="340" class="journey__reveal" data-draw-desktop />
           </mask>
         </defs>
-        <path d={desktopPath} class="journey__crumbs journey__crumbs--ghost" />
         <path d={desktopPath} class="journey__crumbs" mask="url(#journey-mask-d)" />
       </svg>
       <svg class="journey__path journey__path--mobile" viewBox="0 0 80 1000" preserveAspectRatio="none" aria-hidden="true">
@@ -50,7 +49,6 @@ const mobilePath =
             <rect x="-20" y="0" width="120" height="1000" class="journey__reveal" data-draw-mobile />
           </mask>
         </defs>
-        <path d={mobilePath} class="journey__crumbs journey__crumbs--ghost" />
         <path d={mobilePath} class="journey__crumbs" mask="url(#journey-mask-m)" />
       </svg>
 
@@ -109,8 +107,6 @@ const mobilePath =
     stroke-dasharray: 0 20;
     vector-effect: non-scaling-stroke;
   }
-  /* Faint path that is always there, so the road is visible before Mary walks it. */
-  .journey__crumbs--ghost { opacity: 0.3; }
   /* Mask channel (never visible): a white sheet that grows along the path. */
   .journey__reveal { fill: white; transform-box: fill-box; transform-origin: 0 0; }
 
