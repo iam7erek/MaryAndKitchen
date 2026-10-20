@@ -12,7 +12,7 @@ import type { SceneInit } from '../core';
 
 /** Times inside the 10 s story loop (ms). */
 const STORY = 10_000;
-const START = 4_200; // timer nearly done, just before the Ding
+const START = 2_000; // timer still ticking: a bit of baking time before the Ding
 const HOLD = 8_600; // tray on Mary's counter, mitts down, Mary winking
 const SETTLED = 8_800; // the little hearts/steam over the tray have faded
 const SPEED = 1.7; // ~2.6 s from Ding to tray
