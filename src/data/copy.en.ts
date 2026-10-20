@@ -24,6 +24,10 @@ export const copy = {
     tag: 'Homemade in the UAE',
     facts: ['Boxes of 10', 'Order 12 hours ahead', 'Delivery across the UAE'],
     logoAlt: 'Mary And Kitchen',
+    ready: {
+      title: "Yay, it's ready!",
+      line: 'Fresh out of my oven, just for you 💕',
+    },
   },
   revelBar: {
     eyebrow: 'Mary And Bakes · UAE bestseller',

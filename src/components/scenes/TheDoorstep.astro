@@ -28,6 +28,10 @@ const t = copy.doorstep;
 
     <div class="doorstep__stage" data-stage>
       <HeroScene class="doorstep__scene" />
+      <p class="mary-says" data-mary-says>
+        <span class="mary-says__title">{t.ready.title}</span>
+        <span class="mary-says__line">{t.ready.line}</span>
+      </p>
     </div>
     <div class="doorstep__order">
       <WhatsAppButton label={copy.cta.saveBox} variant="paper" />
@@ -108,13 +112,53 @@ const t = copy.doorstep;
 
   /* ---------- The stage: Mary's animated kitchen ---------- */
   .doorstep__stage {
+    position: relative;
     inline-size: min(100%, 34rem);
+    padding-block-start: 3.5rem; /* room for Mary's speech bubble */
   }
 
-  /* While the scene is off screen its CSS loop is paused (doorstep.ts). */
-  .doorstep__stage[data-paused] :global(*) {
-    animation-play-state: paused !important;
+  /* Mary's speech bubble: appears once the tray is out (doorstep.ts). Without
+     motion or JS it is simply there. Its tail points down at Mary. */
+  .mary-says {
+    position: absolute;
+    z-index: 2;
+    inset-block-start: 0;
+    inset-inline-end: 4%;
+    display: grid;
+    gap: 0.1rem;
+    max-inline-size: min(17rem, 62%);
+    padding: 0.7rem 1rem 0.75rem;
+    border-radius: var(--radius-lg);
+    background: var(--color-cream);
+    border: var(--border-line) solid var(--color-cocoa);
+    box-shadow: 0 4px 0 var(--color-cocoa);
+    text-align: center;
+    transform-origin: 70% 100%;
   }
+  .mary-says::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-end: 24%;
+    inline-size: 1.1rem;
+    block-size: 1.1rem;
+    margin-block-start: -0.55rem;
+    background: var(--color-cream);
+    border-inline-end: var(--border-line) solid var(--color-cocoa);
+    border-block-end: var(--border-line) solid var(--color-cocoa);
+    transform: rotate(45deg);
+  }
+  .mary-says__title {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1.5rem; /* rose is for 24px+ type only */
+    line-height: 1.1;
+    color: var(--color-rose);
+  }
+  .mary-says__line { font-weight: 800; font-size: var(--text-caption); line-height: 1.35; }
+  :global(html.motion-pending) .mary-says { opacity: 0; }
 
   /* Pointer crumbs (desktop only, filled by doorstep.ts). */
   .doorstep__crumbs {

@@ -1,32 +1,89 @@
 /**
- * The Doorstep: Mary's hero animation runs on its own (CSS inside the SVG).
- * This module only:
- * - pauses that loop while the scene is off screen (saves battery),
- * - gives the headline its piped-icing wobble,
- * - leaves a faint trail of crumbs behind desktop pointers.
+ * The Doorstep: Mary's hero animation (CSS keyframes inside her SVG, a
+ * 10-second loop as designed). Here it plays ONCE, faster, starting just
+ * before the "Ding", and stops on the moment Mary is holding the fresh tray.
+ * Then her speech bubble pops up. The oven's little ambient loops (glow,
+ * coil, steam) keep going softly and pause while the hero is off screen.
+ *
+ * Also: the headline's piped-icing wobble and the desktop crumb trail.
  */
 import { SplitText } from 'gsap/SplitText';
 import type { SceneInit } from '../core';
 
+/** Times inside the 10 s story loop (ms). */
+const STORY = 10_000;
+const START = 4_200; // timer nearly done, just before the Ding
+const HOLD = 8_600; // tray on Mary's counter, mitts down, Mary winking
+const SETTLED = 8_800; // the little hearts/steam over the tray have faded
+const SPEED = 1.7; // ~2.6 s from Ding to tray
+
 export const init: SceneInit = (root, { gsap, ease, media }) => {
   gsap.registerPlugin(SplitText);
 
-  // Base.astro adds this class for scenes that hide things until their script
-  // runs; nothing here needs it any more, so clear it straight away.
-  document.documentElement.classList.remove('motion-pending');
-
+  const html = document.documentElement;
   const stage = root.querySelector<HTMLElement>('[data-stage]');
+  const svg = stage?.querySelector('svg');
+  const bubble = root.querySelector<HTMLElement>('[data-mary-says]');
   const hello = root.querySelector<HTMLElement>('[data-hello]');
   const crumbLayer = root.querySelector<HTMLElement>('[data-crumbs]');
 
-  // Pause Mary's loop while the hero is out of view.
-  if (stage) {
-    new IntersectionObserver(([entry]) => stage.toggleAttribute('data-paused', !entry.isIntersecting)).observe(
-      stage,
-    );
-  }
-
   const mm = gsap.matchMedia();
+
+  // ---- Mary's scene: once, faster, then hold + speech bubble ----
+  mm.add(media.motion, () => {
+    if (bubble) gsap.set(bubble, { autoAlpha: 0, scale: 0.6, y: 12 });
+    html.classList.remove('motion-pending');
+    if (!svg) return;
+
+    const all = svg.getAnimations({ subtree: true }) as CSSAnimation[];
+    const isStory = (a: Animation) => a.effect?.getComputedTiming().duration === STORY;
+    const story = all.filter(isStory);
+    const ambient = all.filter((a) => !isStory(a));
+    const delayOf = (a: Animation) => Number(a.effect?.getTiming().delay ?? 0);
+    // Steam and hearts over the tray finish fading instead of freezing mid-air.
+    const fleeting = (a: CSSAnimation) => a.animationName === 'ov-tsteam' || a.animationName === 'ov-h';
+
+    const seek = (time: number) =>
+      story.forEach((a) => {
+        a.currentTime = (fleeting(a) && time === HOLD ? SETTLED : time) + delayOf(a);
+      });
+
+    seek(START);
+    story.forEach((a) => {
+      a.playbackRate = SPEED;
+      a.play();
+    });
+
+    let raf = 0;
+    const watch = () => {
+      const lead = story[0];
+      const t = lead ? Number(lead.currentTime) - delayOf(lead) : HOLD;
+      if (t >= HOLD || t < START) {
+        story.forEach((a) => a.pause());
+        seek(HOLD);
+        if (bubble) gsap.to(bubble, { autoAlpha: 1, scale: 1, y: 0, duration: 0.6, ease: 'back.out(1.6)' });
+        return;
+      }
+      raf = requestAnimationFrame(watch);
+    };
+    raf = requestAnimationFrame(watch);
+
+    // Ambient loops rest while the hero is off screen.
+    const io = new IntersectionObserver(([entry]) =>
+      ambient.forEach((a) => (entry.isIntersecting ? a.play() : a.pause())),
+    );
+    if (stage) io.observe(stage);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+    };
+  });
+
+  // Reduced motion: the scene's own CSS shows a still frame; the bubble stays.
+  mm.add(media.reduced, () => {
+    html.classList.remove('motion-pending');
+  });
 
   mm.add(media.motion, () => {
     // Letters stay visible the whole time (only transforms move), so the
