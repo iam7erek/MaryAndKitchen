@@ -1,0 +1,199 @@
+---
+/**
+ * Scene 5: From My Oven to Your Door. The order journey as a dotted line of
+ * crumbs that draws itself on scroll, with Mary walking along it holding her
+ * tray. Four stops: message me, I bake it, box of 10, at your door.
+ * Desktop: a wavy path across (pinned, pin 3 of 3). Phones: the path runs
+ * down the left with the stops beside it (scrubbed, not pinned).
+ * The HTML is the finished journey (path drawn, Mary at your door).
+ */
+import { Image } from 'astro:assets';
+import Scene from '../ui/Scene.astro';
+import { copy } from '../../data/copy.en';
+import maryTray from '../../assets/brand/mascot/mary-bestseller-tray.svg';
+import iconMessage from '../../assets/brand/icons/highlight-reviews.svg';
+import iconBake from '../../assets/brand/icons/highlight-bakes.svg';
+import iconBox from '../../assets/brand/icons/highlight-orders.svg';
+import iconDoor from '../../assets/brand/logo/logo-icon.svg';
+
+const t = copy.journey;
+const icons = [iconMessage, iconBake, iconBox, iconDoor];
+
+// Stops sit where the path crosses its middle line: x = 125/375/625/875 of
+// 1000 across (desktop), y = 125/375/625/875 of 1000 down (phones).
+const desktopPath =
+  'M20 150C60 60 95 60 125 150C155 240 345 240 375 150C405 60 595 60 625 150C655 240 845 240 875 150C905 60 950 90 990 110';
+const mobilePath =
+  'M40 0C5 40 5 90 40 125C75 160 75 340 40 375C5 410 5 590 40 625C75 660 75 840 40 875C15 910 25 960 40 1000';
+---
+
+<Scene id="journey" name="journey" tone="blush" labelledby="journey-title" class="journey">
+  <div class="journey__pin" data-pin>
+    <header class="journey__head">
+      <p class="label journey__eyebrow">{t.eyebrow}</p>
+      <h2 id="journey-title" class="journey__title">{t.title}</h2>
+    </header>
+
+    <div class="journey__road" data-road>
+      <svg class="journey__path journey__path--desktop" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <mask id="journey-mask-d" maskUnits="userSpaceOnUse">
+            <rect x="0" y="-20" width="1000" height="340" class="journey__reveal" data-draw-desktop />
+          </mask>
+        </defs>
+        <path d={desktopPath} class="journey__crumbs" mask="url(#journey-mask-d)" />
+      </svg>
+      <svg class="journey__path journey__path--mobile" viewBox="0 0 80 1000" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <mask id="journey-mask-m" maskUnits="userSpaceOnUse">
+            <rect x="-20" y="0" width="120" height="1000" class="journey__reveal" data-draw-mobile />
+          </mask>
+        </defs>
+        <path d={mobilePath} class="journey__crumbs" mask="url(#journey-mask-m)" />
+      </svg>
+
+      <ol class="journey__steps">
+        {
+          t.steps.map((step, i) => (
+            <li class="step" data-step>
+              <span class="step__stop">
+                <Image src={icons[i]} alt="" class="step__icon" />
+              </span>
+              <div class="step__card">
+                <h3 class="step__title">{step.title}</h3>
+                <p class="step__text">{step.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="journey__walker" data-walker aria-hidden="true">
+        <Image src={maryTray} alt="" class="journey__mary" />
+      </div>
+    </div>
+  </div>
+</Scene>
+
+<style>
+  .journey { overflow-x: clip; }
+  .journey__pin {
+    display: grid;
+    gap: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    max-inline-size: 72rem;
+    margin-inline: auto;
+  }
+  .journey__head { display: grid; gap: 0.5rem; justify-items: center; text-align: center; }
+  .journey__eyebrow {
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-cream);
+    border: 2px solid var(--color-cocoa);
+  }
+  .journey__title { font-size: var(--text-headline); }
+
+  .journey__road { position: relative; }
+
+  .journey__path {
+    position: absolute;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .journey__crumbs {
+    fill: none;
+    stroke: var(--color-biscuit);
+    stroke-width: 11;
+    stroke-linecap: round;
+    stroke-dasharray: 0 20;
+    vector-effect: non-scaling-stroke;
+  }
+  /* Mask channel (never visible): a white sheet that grows along the path. */
+  .journey__reveal { fill: white; transform-box: fill-box; transform-origin: 0 0; }
+
+  /* ---------- Phones: path down the left ---------- */
+  .journey__path--desktop { display: none; }
+  .journey__path--mobile {
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: 5rem;
+    block-size: 100%;
+  }
+
+  .journey__steps {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-auto-rows: 1fr;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 5rem 1fr;
+    align-items: center;
+    gap: 0.75rem;
+    padding-block: 1.25rem;
+    min-block-size: 9rem;
+  }
+  .step__stop {
+    justify-self: center;
+    display: grid;
+    place-items: center;
+    inline-size: 3.75rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--color-blush);
+    border: var(--border-line) solid var(--color-cocoa);
+  }
+  .step__stop :global(.step__icon) { inline-size: 64%; }
+  .step__card {
+    padding: 0.9rem 1.1rem;
+    border-radius: var(--radius-md);
+    background: var(--color-paper);
+    border: var(--border-line) solid var(--color-cocoa);
+    box-shadow: 0 5px 0 var(--color-cocoa);
+  }
+  .step__title { font-size: 1.5rem; font-weight: 700; }
+  .step__text { font-weight: 600; }
+
+  .journey__walker {
+    position: absolute;
+    z-index: 2;
+    inset-inline-start: 2.5rem;
+    inset-block-start: 87.5%;
+    inline-size: 3.5rem;
+    transform: translate(-50%, -100%);
+    pointer-events: none;
+  }
+  .journey__walker :global(.journey__mary) { inline-size: 100%; }
+
+  /* ---------- Desktop: wavy path across ---------- */
+  @media (min-width: 768px) {
+    .journey__path--mobile { display: none; }
+    .journey__path--desktop {
+      display: block;
+      inset-inline: 0;
+      inset-block-start: 0;
+      inline-size: 100%;
+      block-size: 12rem;
+    }
+    .journey__steps { grid-template-columns: repeat(4, 1fr); grid-auto-rows: auto; gap: 1rem; }
+    .step {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      align-items: start;
+      text-align: center;
+      padding-block: 0;
+      min-block-size: 0;
+    }
+    /* Stop sits on the path's middle line (y = 150 of 300 = 6rem). */
+    .step__stop { margin-block: calc(6rem - 1.875rem) 1.5rem; }
+    .journey__walker {
+      inset-inline-start: 87.5%;
+      inset-block-start: 6rem;
+      inline-size: 5.5rem;
+      transform: translate(-50%, -96%);
+    }
+  }
+</style>
