@@ -43,6 +43,17 @@ const jsonLd = {
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
 
+    <script is:inline>
+      // Scenes start in their "before" pose only when motion is allowed and JS
+      // runs. If the scene script hasn't taken over in 3.5s, show the settled
+      // scene instead of leaving anything hidden.
+      if (matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+        var root = document.documentElement;
+        root.classList.add('motion-pending');
+        setTimeout(function () { root.classList.remove('motion-pending'); }, 3500);
+      }
+    </script>
+
     <link rel="preload" href={frauncesItalic} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={nunito} as="font" type="font/woff2" crossorigin />
 

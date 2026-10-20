@@ -18,10 +18,12 @@ export const copy = {
     saveBox: 'Save me a box',
     saveBoxOf10: 'Save me a box of 10',
   },
-  shell: {
+  doorstep: {
     hello: 'Hiii, welcome!',
     line: 'Baked by me, in my kitchen, for you.',
-    soon: "The full kitchen tour is still in the oven. It's coming really soon!",
+    tag: 'Homemade in the UAE',
+    facts: ['Boxes of 10', 'Order 12 hours ahead', 'Delivery across the UAE'],
+    logoAlt: 'Mary And Kitchen',
   },
 } as const;
 

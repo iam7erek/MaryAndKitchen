@@ -1,51 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
-import Scene from '../components/ui/Scene.astro';
-import WhatsAppButton from '../components/ui/WhatsAppButton.astro';
-import { Image } from 'astro:assets';
-import logoPrimary from '../assets/brand/logo/logo-primary.svg';
-import { copy } from '../data/copy.en';
+import TheDoorstep from '../components/scenes/TheDoorstep.astro';
 ---
 
 <Base>
-  <!-- Temporary shell. Replaced scene by scene, starting with The Doorstep. -->
-  <Scene id="doorstep" tone="pink" pattern="pink" drip labelledby="hello">
-    <div class="shell">
-      <Image src={logoPrimary} alt="Mary And Kitchen" class="shell__logo" loading="eager" />
-      <h1 id="hello" class="shell__hello">{copy.shell.hello}</h1>
-      <p class="shell__line short-line">{copy.shell.line}</p>
-      <WhatsAppButton label={copy.cta.saveBox} variant="paper" />
-      <p class="shell__soon">{copy.shell.soon}</p>
-    </div>
-  </Scene>
+  <TheDoorstep />
 </Base>
-
-<style>
-  .shell {
-    display: grid;
-    justify-items: center;
-    align-content: center;
-    gap: 1.25rem;
-    min-block-size: 80dvh;
-    max-inline-size: 40rem;
-    margin-inline: auto;
-    text-align: center;
-  }
-  .shell :global(.shell__logo) {
-    inline-size: min(14rem, 60vw);
-    padding: 1.25rem;
-    border-radius: var(--radius-lg);
-    background: var(--color-cream);
-    border: var(--border-line) solid var(--color-cocoa);
-  }
-  .shell__hello {
-    font-size: var(--text-display);
-  }
-  .shell__line {
-    font-size: var(--text-lead);
-  }
-  .shell__soon {
-    max-inline-size: 26rem;
-    font-weight: 700;
-  }
-</style>
