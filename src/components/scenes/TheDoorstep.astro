@@ -1,30 +1,19 @@
 ---
 /**
  * Scene 1: The Doorstep.
- * Mary peeks out of a round oven door; cookies tumble out onto the counter.
- * The HTML is the final, settled state (door open, Mary up, cookies landed).
- * scripts/motion/scenes/doorstep.ts plays the opening from a closed oven.
- * The oven, counter and knobs are built from brand colours; Mary, the logo
- * and the cookies are the brand files, untouched.
+ * Mary's own hero animation (components/hero/HeroScene.astro, from the
+ * Animation folder, used unchanged): she takes a tray of brownies and oat
+ * revel bars out of her pink oven on a 10-second loop. It is pure CSS inside
+ * the SVG, honours reduced motion itself, and pauses while off screen
+ * (scripts/motion/scenes/doorstep.ts).
  */
-import { Image } from 'astro:assets';
 import Scene from '../ui/Scene.astro';
 import WhatsAppButton from '../ui/WhatsAppButton.astro';
+import HeroScene from '../hero/HeroScene.astro';
 import { copy } from '../../data/copy.en';
-import logoPrimary from '../../assets/brand/logo/logo-primary.svg';
-import maryHead from '../../assets/brand/mascot/mary-head.svg';
-import cookieChoc from '../../assets/brand/products/brown-butter-choc-chip.svg';
-import cookieRed from '../../assets/brand/products/red-velvet-cookie.svg';
 import crumbs from '../../assets/brand/elements/crumbs.svg';
 
 const t = copy.doorstep;
-
-// Where each cookie comes to rest on the counter.
-const cookies = [
-  { src: cookieChoc, x: '-44%', r: -14, size: '24%' },
-  { src: cookieRed, x: '33%', r: 9, size: '21%' },
-  { src: cookieChoc, x: '46%', r: 22, size: '17%' },
-];
 ---
 
 <Scene id="doorstep" name="doorstep" tone="pink" pattern="pink" drip labelledby="doorstep-hello" class="doorstep">
@@ -38,50 +27,8 @@ const cookies = [
     </div>
 
     <div class="doorstep__stage" data-stage>
-      <Image
-        src={logoPrimary}
-        alt={t.logoAlt}
-        class="doorstep__sign"
-        loading="eager"
-        data-sign
-      />
-
-      <div class="oven" aria-hidden="true">
-        <svg class="oven__steam" viewBox="0 0 120 60" fill="none">
-          <path d="M28 58c-10-10 10-16 0-28s8-18 0-28" />
-          <path d="M60 58c-10-10 10-16 0-28s8-18 0-28" />
-          <path d="M92 58c-10-10 10-16 0-28s8-18 0-28" />
-        </svg>
-        <div class="oven__panel">
-          <span class="oven__knob"></span>
-          <span class="oven__light"></span>
-          <span class="oven__knob"></span>
-        </div>
-        <div class="oven__opening">
-          <div class="oven__window">
-            <span class="oven__glow" data-glow></span>
-            <span class="oven__rack oven__rack--back"></span>
-            <Image src={maryHead} alt="" class="oven__mary" loading="eager" data-mary />
-            <span class="oven__rack oven__rack--front"></span>
-          </div>
-          <div class="oven__door" data-door>
-            <span class="oven__glass"></span>
-            <span class="oven__handle"></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="counter" aria-hidden="true">
-        {
-          cookies.map((c) => (
-            <span class="cookie" data-cookie data-rest={c.r} style={`--x: ${c.x}; --r: ${c.r}deg; --size: ${c.size}`}>
-              <Image src={c.src} alt="" class="cookie__img" loading="eager" />
-            </span>
-          ))
-        }
-      </div>
+      <HeroScene class="doorstep__scene" />
     </div>
-
     <div class="doorstep__order">
       <WhatsAppButton label={copy.cta.saveBox} variant="paper" />
       <ul class="doorstep__facts">
@@ -94,7 +41,7 @@ const cookies = [
 <style>
   :global(.doorstep) {
     padding-block: clamp(5.5rem, 4.5rem + 3vw, 7rem) clamp(3.5rem, 2rem + 5vw, 6rem);
-    overflow-x: clip; /* the open door and cookies may poke past the edge */
+    overflow-x: clip;
   }
 
   .doorstep__inner {
@@ -159,197 +106,15 @@ const cookies = [
     border: 2px solid var(--color-cocoa);
   }
 
-  /* ---------- The stage: oven, sign, counter ---------- */
+  /* ---------- The stage: Mary's animated kitchen ---------- */
   .doorstep__stage {
-    position: relative;
-    inline-size: min(70vw, 25rem);
-    margin-inline-start: 12%;
-    margin-block-start: 2.5rem; /* room for the steam */
-    padding-block-end: 9%;
+    inline-size: min(100%, 34rem);
   }
 
-  .doorstep__stage :global(.doorstep__sign) {
-    position: absolute;
-    z-index: 3;
-    inset-inline-start: -8%;
-    inset-block-start: -6%;
-    inline-size: 24%;
-    padding: 0.4rem;
-    border-radius: var(--radius-sm);
-    background: var(--color-cream);
-    border: var(--border-line) solid var(--color-cocoa);
-    transform: rotate(-7deg);
-    transform-origin: 50% 0;
+  /* While the scene is off screen its CSS loop is paused (doorstep.ts). */
+  .doorstep__stage[data-paused] :global(*) {
+    animation-play-state: paused !important;
   }
-
-  .oven {
-    position: relative;
-    aspect-ratio: 1 / 1.02;
-    border-radius: 2.25rem 2.25rem 1.25rem 1.25rem;
-    background: var(--color-cream);
-    border: var(--border-line) solid var(--color-cocoa);
-    box-shadow: inset 0 -10px 0 var(--color-blush);
-    display: grid;
-    grid-template-rows: auto 1fr;
-    padding: 6% 8% 9%;
-    perspective: 900px;
-  }
-
-  .oven__panel {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-inline: 4%;
-    padding-block-end: 6%;
-  }
-  .oven__knob {
-    inline-size: 13%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--color-mary-pink);
-    border: var(--border-line) solid var(--color-cocoa);
-    position: relative;
-  }
-  .oven__knob::after {
-    content: '';
-    position: absolute;
-    inset-inline-start: 45%;
-    inset-block-start: 12%;
-    inline-size: 10%;
-    block-size: 36%;
-    border-radius: 2px;
-    background: var(--color-cocoa);
-  }
-  .oven__light {
-    inline-size: 6%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--color-pistachio);
-    border: 2px solid var(--color-cocoa);
-  }
-
-  .oven__opening {
-    position: relative;
-    justify-self: center;
-    align-self: end;
-    inline-size: 82%;
-    aspect-ratio: 1;
-    transform-style: preserve-3d;
-  }
-
-  .oven__window {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    overflow: hidden;
-    background: var(--color-cocoa);
-    border: var(--border-line) solid var(--color-cocoa);
-    isolation: isolate;
-  }
-
-  /* Butter-yellow oven light behind Mary. */
-  .oven__glow {
-    position: absolute;
-    inset: 6%;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 70%, var(--color-biscuit) 0 30%, transparent 72%),
-      var(--color-blush);
-  }
-
-  .oven__window :global(.oven__mary) {
-    position: absolute;
-    z-index: 1;
-    inset-inline-start: 20%;
-    inset-block-end: 2%;
-    inline-size: 60%;
-  }
-
-  /* Baking racks: Mary peeks out between them. */
-  .oven__rack {
-    position: absolute;
-    inset-inline: 4%;
-    block-size: 3.5%;
-    border-radius: var(--radius-pill);
-    background: var(--color-cocoa);
-  }
-  .oven__rack--back { inset-block-start: 34%; opacity: 0.35; }
-  .oven__rack--front { inset-block-start: 88%; z-index: 2; }
-
-  /* Warm steam curling up from the oven top. */
-  .oven__steam {
-    position: absolute;
-    inset-inline: 22%;
-    inset-block-end: 100%;
-    block-size: auto;
-    stroke: var(--color-cream);
-    stroke-width: 5;
-    stroke-linecap: round;
-  }
-  .oven__steam path { animation: steam 3.2s var(--ease-soft) infinite; transform-box: fill-box; transform-origin: 50% 100%; }
-  .oven__steam path:nth-child(2) { animation-delay: 1s; }
-  .oven__steam path:nth-child(3) { animation-delay: 2s; }
-  @keyframes steam {
-    0% { opacity: 0; transform: translateY(12px) scaleY(0.7); }
-    35% { opacity: 0.9; }
-    100% { opacity: 0; transform: translateY(-14px) scaleY(1.1); }
-  }
-
-  /* The door swings open on a left hinge. Final state: open. */
-  .oven__door {
-    position: absolute;
-    inset: -5%;
-    border-radius: 50%;
-    background: var(--color-cream);
-    border: var(--border-line) solid var(--color-cocoa);
-    transform-origin: 0% 50%;
-    transform: rotateY(-108deg);
-    backface-visibility: visible;
-    display: grid;
-    place-items: center;
-    z-index: 2;
-  }
-  .oven__glass {
-    inline-size: 76%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--color-blush);
-    border: var(--border-line) solid var(--color-cocoa);
-    box-shadow: inset 10px -10px 0 color-mix(in srgb, var(--color-paper) 70%, transparent);
-  }
-  .oven__handle {
-    position: absolute;
-    inset-inline-end: 4%;
-    inset-block-start: 38%;
-    inline-size: 7%;
-    block-size: 24%;
-    border-radius: var(--radius-pill);
-    background: var(--color-mary-pink);
-    border: var(--border-line) solid var(--color-cocoa);
-  }
-
-  .counter {
-    position: absolute;
-    inset-inline: -6%;
-    inset-block-end: 0;
-    block-size: 14%;
-    border-radius: var(--radius-pill);
-    background: var(--color-biscuit);
-    border: var(--border-line) solid var(--color-cocoa);
-    z-index: 2;
-  }
-  /* GSAP owns .cookie's transform; the image inside does the hover wiggle. */
-  .cookie {
-    position: absolute;
-    inset-inline-start: calc(50% - var(--size) / 2 + var(--x));
-    inset-block-end: 55%;
-    inline-size: var(--size);
-    transform: rotate(var(--r));
-  }
-  .cookie :global(.cookie__img) {
-    inline-size: 100%;
-    transition: transform var(--duration-soft) var(--ease-spring);
-  }
-  .cookie:hover :global(.cookie__img) { transform: rotate(14deg) scale(1.06); }
 
   /* Pointer crumbs (desktop only, filled by doorstep.ts). */
   .doorstep__crumbs {
@@ -369,12 +134,6 @@ const cookies = [
     opacity: 0;
   }
 
-  /* Before the opening plays: oven closed, Mary down, cookies still inside.
-     Only when motion is allowed and JS is about to run (see Base.astro). */
-  :global(html.motion-pending) .oven__door { transform: none; }
-  :global(html.motion-pending) .oven__window :global(.oven__mary) { transform: translateY(80%); }
-  :global(html.motion-pending) .cookie { opacity: 0; }
-
   /* ---------- Desktop ---------- */
   @media (min-width: 768px) {
     .doorstep__inner {
@@ -388,7 +147,7 @@ const cookies = [
     .doorstep__words { justify-items: start; align-self: end; }
     .doorstep__order { justify-items: start; align-self: start; }
     .doorstep__facts { justify-content: flex-start; }
-    .doorstep__stage { justify-self: center; inline-size: min(36vw, 28rem); justify-self: end; margin-inline-start: clamp(3rem, 6vw, 7rem); }
+    .doorstep__stage { justify-self: end; inline-size: min(50vw, 42rem); }
   }
 
   /* Calm patches in the sprinkles behind the words (readability). */
