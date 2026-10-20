@@ -1,0 +1,30 @@
+---
+// Landing page for the no-JS fallback of the order form (/api/order redirects here).
+import Base from '../layouts/Base.astro';
+import Scene from '../components/ui/Scene.astro';
+import { copy } from '../data/copy.en';
+---
+
+<Base title={`${copy.ringBell.successTitle} · Mary And Kitchen`} noindex>
+  <Scene id="sent" tone="pink" pattern="pink" labelledby="sent-title">
+    <div class="sent">
+      <h1 id="sent-title">{copy.ringBell.successTitle}</h1>
+      <p>{copy.ringBell.successText}</p>
+      <a class="btn" href="/">Back to my kitchen</a>
+    </div>
+  </Scene>
+</Base>
+
+<style>
+  .sent {
+    display: grid;
+    justify-items: center;
+    gap: 1.25rem;
+    min-block-size: 70svh;
+    align-content: center;
+    text-align: center;
+    font-weight: 700;
+    font-size: var(--text-lead);
+  }
+  .sent h1 { font-size: var(--text-headline); }
+</style>

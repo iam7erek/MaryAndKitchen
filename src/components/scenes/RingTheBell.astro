@@ -1,0 +1,249 @@
+---
+/**
+ * Scene 7: Ring the Bell. The order request as a handwritten order slip on a
+ * recipe card. Submits to /api/order (Resend email to Mary), then "Yesss,
+ * you're on my list!" with a burst of sprinkles. WhatsApp sits right beside
+ * it as the faster option, prefilled with whatever has been typed.
+ * Works without JS too: the form posts normally and lands on /order-sent.
+ */
+import { Image } from 'astro:assets';
+import Scene from '../ui/Scene.astro';
+import { copy } from '../../data/copy.en';
+import { whatsappLink } from '../../data/site';
+import maryBox from '../../assets/brand/mascot/mary-cookie-box.svg';
+import sprinkle from '../../assets/brand/elements/sprinkle.svg';
+import heart from '../../assets/brand/elements/heart.svg';
+import square from '../../assets/brand/elements/square.svg';
+import seal from '../../assets/brand/stamps/seal-pink.svg';
+
+const t = copy.ringBell;
+const f = t.fields;
+const shapes = [sprinkle.src, heart.src, square.src].join('|');
+---
+
+<Scene id="order" tone="pink" pattern="pink" drip labelledby="bell-title" class="bell">
+  <header class="bell__head">
+    <p class="label bell__eyebrow">{t.eyebrow}</p>
+    <h2 id="bell-title" class="bell__title">{t.title}</h2>
+    <p class="bell__line">{t.line}</p>
+  </header>
+
+  <div class="bell__layout">
+    <div class="slip">
+      <Image src={seal} alt="" class="slip__seal" />
+      <form
+        class="slip__form"
+        action="/api/order"
+        method="post"
+        novalidate
+        data-order-form
+        data-sending={t.sending}
+        data-error={t.error}
+        data-invalid={t.invalid}
+      >
+        <div class="field">
+          <label for="o-name">{f.name}</label>
+          <input id="o-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="80" />
+        </div>
+        <div class="field">
+          <label for="o-phone">{f.phone}</label>
+          <input
+            id="o-phone"
+            name="phone"
+            type="tel"
+            inputmode="tel"
+            autocomplete="tel"
+            required
+            pattern="[+0-9 ()\-]{7,24}"
+            placeholder="+971"
+          />
+        </div>
+        <div class="field">
+          <label for="o-order">{f.order}</label>
+          <textarea id="o-order" name="order" rows="3" required minlength="3" maxlength="1500" placeholder={f.orderHint}
+          ></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="o-date">{f.date}</label>
+            <input id="o-date" name="date" type="date" required />
+          </div>
+          <div class="field">
+            <label for="o-area">{f.area}</label>
+            <input
+              id="o-area"
+              name="area"
+              type="text"
+              autocomplete="address-level2"
+              required
+              minlength="2"
+              maxlength="120"
+              placeholder={f.areaHint}
+            />
+          </div>
+        </div>
+
+        <div class="hp" aria-hidden="true">
+          <label>Website <input name="website" type="text" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        <p class="slip__note">{t.aheadNote}</p>
+        <button type="submit" class="btn btn--pink slip__submit">{t.submit}</button>
+        <p class="slip__status" role="status" aria-live="polite" data-status></p>
+      </form>
+
+      <div class="slip__success" tabindex="-1" hidden data-order-success>
+        <div class="slip__sprinkles" data-sprinkles data-shapes={shapes} aria-hidden="true"></div>
+        <p class="slip__yes">{t.successTitle}</p>
+        <p>{t.successText}</p>
+      </div>
+    </div>
+
+    <aside class="fast">
+      <Image src={maryBox} alt="" class="fast__mary" />
+      <p class="fast__title">{t.faster}</p>
+      <p class="fast__line">{t.fasterLine}</p>
+      <a class="btn fast__btn" href={whatsappLink()} target="_blank" rel="noopener" data-fast-whatsapp>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+          <path
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M4.6 19.4 5.7 16A8 8 0 1 1 8.4 18.6Z M9 9.2c0 3 2.6 5.8 5.8 5.8l1-1.4-1.9-.9-.9.9c-1-.4-2-1.4-2.4-2.4l.9-.9-.9-1.9Z"
+          ></path>
+        </svg>
+        <span>WhatsApp</span>
+      </a>
+    </aside>
+  </div>
+</Scene>
+
+<script>
+  import '../../scripts/order-form';
+</script>
+
+<style>
+  .bell__head { display: grid; gap: 0.5rem; justify-items: center; text-align: center; margin-block-end: 2rem; }
+  .bell__eyebrow {
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-cream);
+    border: 2px solid var(--color-cocoa);
+  }
+  .bell__title { font-size: var(--text-headline); }
+  .bell__line { font-size: var(--text-lead); max-inline-size: 30rem; }
+
+  .bell__layout {
+    display: grid;
+    gap: 2rem;
+    max-inline-size: 60rem;
+    margin-inline: auto;
+    align-items: start;
+  }
+
+  /* The recipe card */
+  .slip {
+    position: relative;
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border-radius: var(--radius-lg);
+    background:
+      repeating-linear-gradient(180deg, transparent 0 2.4rem, color-mix(in srgb, var(--color-mary-pink) 30%, transparent) 2.4rem calc(2.4rem + 1px)),
+      var(--color-paper);
+    border: var(--border-line) solid var(--color-cocoa);
+    box-shadow: 0 8px 0 var(--color-cocoa);
+    rotate: -0.6deg;
+  }
+  .slip :global(.slip__seal) {
+    position: absolute;
+    inset-inline-end: -1.25rem;
+    inset-block-start: -1.75rem;
+    inline-size: 5.5rem;
+    rotate: 10deg;
+  }
+
+  .slip__form { display: grid; gap: 1.1rem; }
+  .field { display: grid; gap: 0.2rem; }
+  .field-row { display: grid; gap: 1.1rem; }
+  .field label { font-weight: 900; font-size: var(--text-caption); }
+  .field input,
+  .field textarea {
+    inline-size: 100%;
+    min-block-size: 44px;
+    padding: 0.35rem 0.2rem;
+    border: 0;
+    border-block-end: var(--border-line) dashed var(--color-cocoa);
+    background: transparent;
+    color: var(--color-cocoa);
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 1.25rem;
+    border-radius: 0;
+  }
+  .field textarea { resize: vertical; line-height: 1.4; }
+  .field input::placeholder,
+  .field textarea::placeholder { color: var(--color-muted); opacity: 0.8; font-weight: 400; }
+  .field input:focus-visible,
+  .field textarea:focus-visible { outline-offset: 2px; border-radius: 6px; }
+  .field [aria-invalid] { border-block-end-color: var(--color-red-velvet); border-block-end-style: solid; }
+
+  .hp { position: absolute; inset-inline-start: -10000px; inline-size: 1px; block-size: 1px; overflow: hidden; }
+
+  .slip__note { font-weight: 800; color: var(--color-red-velvet); font-size: var(--text-caption); }
+  .slip__submit { justify-self: start; }
+  .slip__status { min-block-size: 1.5em; font-weight: 800; color: var(--color-red-velvet); }
+
+  .slip__success {
+    position: relative;
+    display: grid;
+    gap: 0.75rem;
+    justify-items: center;
+    padding-block: 3rem;
+    text-align: center;
+    font-weight: 700;
+    outline: none;
+  }
+  .slip__yes {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-style: italic;
+    font-weight: 700;
+    font-size: var(--text-title);
+    color: var(--color-rose);
+  }
+  .slip__sprinkles { position: absolute; inset-inline-start: 50%; inset-block-start: 40%; }
+  .slip__sprinkles :global(.sprinkle-bit) {
+    position: absolute;
+    inline-size: 22px;
+    block-size: 22px;
+    background: center / contain no-repeat;
+    pointer-events: none;
+  }
+
+  /* The faster option */
+  .fast {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    background: var(--color-cream);
+    border: var(--border-line) solid var(--color-cocoa);
+    text-align: center;
+  }
+  .fast :global(.fast__mary) { inline-size: 6rem; }
+  .fast__title { font-family: var(--font-display); font-variation-settings: 'SOFT' 100; font-weight: 700; font-style: italic; font-size: 1.6rem; color: var(--color-rose); }
+  .fast__line { font-weight: 700; }
+  .fast__btn { background: var(--color-mary-pink); }
+
+  @media (min-width: 640px) {
+    .field-row { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 900px) {
+    .bell__layout { grid-template-columns: 1.6fr 1fr; }
+    .fast { position: sticky; inset-block-start: 6rem; }
+  }
+</style>
