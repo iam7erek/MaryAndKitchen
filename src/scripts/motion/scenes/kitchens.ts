@@ -14,13 +14,7 @@ export const init: SceneInit = (root) => {
     toggle.textContent = (open ? toggle.dataset.labelOpen : toggle.dataset.labelClosed) ?? '';
   };
 
-  // Close the boxes without animating (otherwise the lids visibly swing shut).
-  const boxes = root.querySelectorAll<HTMLElement>('[data-box]');
-  boxes.forEach((box) => {
-    box.setAttribute('data-instant', '');
-    setOpen(box, false);
-  });
-  requestAnimationFrame(() => requestAnimationFrame(() => boxes.forEach((box) => box.removeAttribute('data-instant'))));
+  root.querySelectorAll<HTMLElement>('[data-box]').forEach((box) => setOpen(box, false));
 
   root.addEventListener('click', (event) => {
     const target = event.target as Element | null;
