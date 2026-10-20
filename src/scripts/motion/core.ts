@@ -77,7 +77,7 @@ document.addEventListener('click', (event) => {
 const modules = import.meta.glob<{ init: SceneInit }>('./scenes/*.ts');
 const context: SceneContext = { gsap, ScrollTrigger, ease, media, lenis: () => lenis };
 
-function loadScene(root: HTMLElement): void {
+function loadScene(root: HTMLElement): Promise<void> {
   const name = root.dataset.scene;
   const loader = name ? modules[`./scenes/${name}.ts`] : undefined;
   return loader ? loader().then(({ init }) => init(root, context)) : Promise.resolve();
