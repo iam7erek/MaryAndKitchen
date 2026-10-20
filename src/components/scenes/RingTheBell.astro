@@ -247,5 +247,6 @@ const shapes = [sprinkle.src, heart.src, square.src].join('|');
     .fast { position: sticky; inset-block-start: 6rem; }
   }
 
-  :global(.bell) { --pattern-mask: linear-gradient(to bottom, rgb(0 0 0 / 0.14) 0 15rem, black 22rem); }
+  /* The whole header (title + line) sits on calm pink; the slip below is opaque anyway. */
+  :global(.bell) { --pattern-mask: linear-gradient(to bottom, rgb(0 0 0 / 0.14) 0 26rem, black 34rem); }
 </style>
