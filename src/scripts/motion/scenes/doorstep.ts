@@ -77,7 +77,7 @@ export const init: SceneInit = (root, { gsap, ease, media }) => {
     // whole time (only transforms move), so it never delays first paint.
     let split: SplitText | undefined;
     if (hello) {
-      split = SplitText.create(hello, { type: 'words,chars', charsClass: 'char' });
+      split = SplitText.create(hello, { type: 'words,chars', wordsClass: 'word', charsClass: 'char' });
       gsap.from(split.chars, {
         yPercent: 35,
         scaleY: 0.7,

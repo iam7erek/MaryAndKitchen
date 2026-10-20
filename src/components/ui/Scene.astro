@@ -37,6 +37,7 @@ const tile = pattern ? tiles[pattern].src : undefined;
   class:list={['scene', `scene--${tone}`, tile && 'scene--pattern', className]}
   style={tile ? `--tile: url(${tile})` : undefined}
 >
+  {tile && <span class="scene__pattern" aria-hidden="true" />}
   <slot />
   {drip && <IcingEdge class="scene__drip" />}
 </section>
@@ -53,10 +54,19 @@ const tile = pattern ? tiles[pattern].src : undefined;
   .scene--blush { background-color: var(--color-blush); }
   .scene--pink { background-color: var(--color-mary-pink); color: var(--color-cocoa); }
   .scene--cocoa { background-color: var(--color-cocoa); color: var(--color-cream); }
-  .scene--pattern {
+  /* The sprinkle tile sits on its own layer so each scene can quiet it
+     behind its text with --pattern-mask (a gradient: black = full pattern,
+     faint = a calm patch where words sit). */
+  .scene__pattern {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     background-image: var(--tile);
     background-size: 200px 200px;
     background-repeat: repeat;
+    -webkit-mask-image: var(--pattern-mask, none);
+    mask-image: var(--pattern-mask, none);
+    pointer-events: none;
   }
   .scene :global(.scene__drip) {
     position: absolute;

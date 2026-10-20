@@ -62,22 +62,35 @@ const tilts = [-3, 2.5, -1.5, 3, -2.5, 1.5];
     position: relative;
     max-inline-size: 60rem;
     margin-inline: auto;
-    padding: clamp(2rem, 1rem + 4vw, 3.5rem) clamp(1rem, 0.5rem + 3vw, 3rem);
+    padding: 4rem clamp(1rem, 0.5rem + 3vw, 3rem) clamp(2rem, 1rem + 4vw, 3.5rem);
     border-radius: 2.5rem;
     background: var(--color-paper);
     border: var(--border-line) solid var(--color-cocoa);
-    box-shadow: inset -14px 0 0 var(--color-cream);
   }
+  /* A chunky horizontal fridge handle on two little mounts (decoration). */
   .fridge__handle {
     position: absolute;
-    inset-inline-end: 1.25rem;
-    inset-block-start: 2rem;
-    inline-size: 0.9rem;
-    block-size: 7rem;
+    inset-block-start: 1.1rem;
+    inset-inline-start: 50%;
+    inline-size: min(10rem, 40%);
+    block-size: 0.95rem;
+    translate: -50% 0;
     border-radius: var(--radius-pill);
     background: var(--color-blush);
     border: var(--border-line) solid var(--color-cocoa);
   }
+  .fridge__handle::before,
+  .fridge__handle::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 100%;
+    inline-size: 0.8rem;
+    block-size: 0.7rem;
+    background: var(--color-cocoa);
+    border-radius: 0 0 4px 4px;
+  }
+  .fridge__handle::before { inset-inline-start: 12%; }
+  .fridge__handle::after { inset-inline-end: 12%; }
   .fridge :global(.fridge__sticker) {
     position: absolute;
     inset-inline-start: -1rem;

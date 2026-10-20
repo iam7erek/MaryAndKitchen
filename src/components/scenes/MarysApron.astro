@@ -39,7 +39,7 @@ const t = copy.apron;
 </Scene>
 
 <style>
-  .apron { padding-block-end: max(5rem, env(safe-area-inset-bottom)); }
+  :global(.apron) { padding-block-end: max(5rem, env(safe-area-inset-bottom)); }
   .apron__inner {
     display: grid;
     justify-items: center;
@@ -101,4 +101,6 @@ const t = copy.apron;
       100% { transform: rotate(0deg); }
     }
   }
+
+  :global(.apron) { --pattern-mask: radial-gradient(ellipse 55% 60% at 50% 50%, rgb(0 0 0 / 0.14) 45%, black 85%); }
 </style>

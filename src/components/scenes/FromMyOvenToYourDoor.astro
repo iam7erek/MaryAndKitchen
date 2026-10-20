@@ -76,7 +76,7 @@ const mobilePath =
 </Scene>
 
 <style>
-  .journey { overflow-x: clip; }
+  :global(.journey) { overflow-x: clip; }
   .journey__pin {
     display: grid;
     gap: clamp(1.5rem, 1rem + 2vw, 2.5rem);
@@ -157,13 +157,15 @@ const mobilePath =
   .step__title { font-size: 1.5rem; font-weight: 700; }
   .step__text { font-weight: 600; }
 
+  /* Mary finishes just past the last stop (below it on phones, beside it on
+     desktop) so she never sits on top of the door icon. */
   .journey__walker {
     position: absolute;
     z-index: 2;
     inset-inline-start: 2.5rem;
-    inset-block-start: 87.5%;
-    inline-size: 3.5rem;
-    transform: translate(-50%, -100%);
+    inset-block-start: calc(87.5% + 2.1rem);
+    inline-size: 2.9rem;
+    transform: translate(-50%, 0);
     pointer-events: none;
   }
   .journey__walker :global(.journey__mary) { inline-size: 100%; }
@@ -190,7 +192,7 @@ const mobilePath =
     /* Stop sits on the path's middle line (y = 150 of 300 = 6rem). */
     .step__stop { margin-block: calc(6rem - 1.875rem) 1.5rem; }
     .journey__walker {
-      inset-inline-start: 87.5%;
+      inset-inline-start: calc(87.5% + 5.2rem);
       inset-block-start: 6rem;
       inline-size: 5.5rem;
       transform: translate(-50%, -96%);

@@ -92,7 +92,7 @@ const cookies = [
 </Scene>
 
 <style>
-  .doorstep {
+  :global(.doorstep) {
     padding-block: clamp(5.5rem, 4.5rem + 3vw, 7rem) clamp(3.5rem, 2rem + 5vw, 6rem);
     overflow-x: clip; /* the open door and cookies may poke past the edge */
   }
@@ -111,7 +111,14 @@ const cookies = [
     text-align: center;
   }
 
-  .doorstep__words { grid-area: words; display: grid; justify-items: center; gap: 0.75rem; }
+  .doorstep__words {
+    grid-area: words;
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    inline-size: 100%;
+    container-type: inline-size; /* the headline sizes itself to this column */
+  }
   .doorstep__stage { grid-area: stage; }
   .doorstep__order { grid-area: order; display: grid; justify-items: center; gap: 1rem; }
 
@@ -123,10 +130,12 @@ const cookies = [
   }
 
   .doorstep__hello {
-    font-size: var(--text-display);
+    /* 'welcome!' is the longest word: ~4.6em wide, so 19% of the column keeps it whole. */
+    font-size: clamp(3rem, 19cqi, 7.5rem);
     color: var(--color-cocoa);
     line-height: 0.95;
   }
+  .doorstep__hello :global(.word) { white-space: nowrap; }
 
   .doorstep__line {
     font-size: var(--text-lead);
@@ -369,7 +378,7 @@ const cookies = [
   /* ---------- Desktop ---------- */
   @media (min-width: 768px) {
     .doorstep__inner {
-      grid-template-columns: 1.05fr 1fr;
+      grid-template-columns: minmax(0, 1fr) auto;
       grid-template-areas: 'words stage' 'order stage';
       justify-items: start;
       align-items: center;
@@ -377,9 +386,16 @@ const cookies = [
       column-gap: clamp(2rem, 1rem + 4vw, 5rem);
     }
     .doorstep__words { justify-items: start; align-self: end; }
-    .doorstep__hello { font-size: clamp(3rem, 1rem + 5.2vw, 7rem); }
     .doorstep__order { justify-items: start; align-self: start; }
     .doorstep__facts { justify-content: flex-start; }
-    .doorstep__stage { justify-self: center; inline-size: min(36vw, 28rem); justify-self: end; margin-inline-start: clamp(4rem, 9vw, 9rem); }
+    .doorstep__stage { justify-self: center; inline-size: min(36vw, 28rem); justify-self: end; margin-inline-start: clamp(3rem, 6vw, 7rem); }
+  }
+
+  /* Calm patches in the sprinkles behind the words (readability). */
+  :global(.doorstep) {
+    --pattern-mask: linear-gradient(to bottom, rgb(0 0 0 / 0.14) 0 40%, black 52% 70%, rgb(0 0 0 / 0.14) 82% 100%);
+  }
+  @media (min-width: 768px) {
+    :global(.doorstep) { --pattern-mask: linear-gradient(to right, rgb(0 0 0 / 0.14) 0 44%, black 58%); }
   }
 </style>
