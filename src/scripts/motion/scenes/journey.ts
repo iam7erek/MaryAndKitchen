@@ -37,8 +37,8 @@ export const init: SceneInit = (root, { gsap, ease, media }) => {
 
       tl.set(draw, { [grow]: 0, transformOrigin: '0% 0%' }, 0)
         .set(walker, { [axis]: back }, 0)
-        .set(cards, { autoAlpha: 0, y: 24, scale: 0.94 }, 0)
-        .set(stops, { scale: 0.4, autoAlpha: 0 }, 0);
+        .set(cards, { autoAlpha: 0.35, y: 16, scale: 0.96 }, 0)
+        .set(stops, { scale: 0.8, autoAlpha: 0.6 }, 0);
 
       // The path and Mary travel together over the whole scrub.
       tl.to(draw, { [grow]: 1, duration: 4 }, 0.1).to(walker, { [axis]: 0, duration: 4 }, 0.1);

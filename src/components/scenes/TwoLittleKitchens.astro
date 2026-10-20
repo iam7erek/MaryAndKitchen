@@ -235,8 +235,8 @@ const boxes = [
     border-radius: 0.9rem 0.9rem 0.4rem 0.4rem;
     background: var(--color-mary-pink);
     border: var(--border-line) solid var(--color-cocoa);
-    transform-origin: 100% 100%;
-    transition: transform 620ms var(--ease-spring);
+    transform-origin: 50% 100%;
+    transition: transform 560ms var(--ease-spring), opacity 320ms var(--ease-soft);
   }
   .kbox__ribbon {
     position: absolute;
@@ -246,7 +246,11 @@ const boxes = [
     background: var(--color-red-velvet);
     border-inline: var(--border-line) solid var(--color-cocoa);
   }
-  .kbox[data-open='true'] .kbox__lid { transform: rotate(104deg); }
+  /* Open: the lid pops straight up with a little tilt and floats away. */
+  .kbox[data-open='true'] .kbox__lid { transform: translateY(-180%) rotate(-6deg); opacity: 0; }
+  /* No animation while the script sets the starting (closed) state. */
+  .kbox[data-instant] *,
+  .kbox[data-instant] { transition: none !important; }
 
   .kbox__label {
     padding: 0.75rem 1.25rem;
