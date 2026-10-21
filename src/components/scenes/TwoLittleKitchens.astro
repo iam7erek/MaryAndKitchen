@@ -142,7 +142,8 @@ const boxes = [
   .kbox__stage {
     position: relative;
     display: grid;
-    inline-size: min(88vw, 26rem);
+    /* 3.5rem left free on phones for Mary peeking past the box's right side. */
+    inline-size: min(88vw - 3.5rem, 26rem);
   }
 
   /* What's inside: pops up out of the box when the lid lifts. */
@@ -263,9 +264,22 @@ const boxes = [
     inset-inline-end: -14%;
     inline-size: 5.5rem;
   }
+  /* The Squares art has a wider board (viewBox 144.75 wide vs 126.75), so it
+     gets that much more width to keep Mary the same size as on the Bakes box,
+     and moves out by the board's extra right-hand end so she stays put. */
+  .kbox--squares .kbox__body :global(.kbox__mary) {
+    inset-inline-end: calc(-14% - 0.25rem);
+    inline-size: calc(5.5rem * 144.75 / 126.75);
+  }
 
   .kbox__line { max-inline-size: 26rem; margin-block-start: 0.75rem; font-weight: 700; }
   .kbox__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+
+  /* Small phones: nudge the label away from Mary so her board doesn't cover it. */
+  @media (max-width: 479.98px) {
+    .kbox__body { padding-inline: 0.5rem 3rem; }
+    .kbox__label :global(.kbox__lockup) { block-size: 2.5rem; }
+  }
 
   @media (min-width: 900px) {
     .kitchens__boxes { grid-template-columns: 1fr 1fr; align-items: end; }
