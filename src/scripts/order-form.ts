@@ -4,6 +4,7 @@
  * celebrates a sent order with a little burst of sprinkles.
  */
 import { whatsappLink } from '../data/site';
+import { copy } from '../data/copy.en';
 
 const form = document.querySelector<HTMLFormElement>('[data-order-form]');
 
@@ -28,12 +29,13 @@ if (form) {
   const updateFast = () => {
     if (!fast) return;
     const v = values();
+    const p = copy.ringBell.prefill;
     const lines = [
-      `Hiii Mary! I'd love to order 💕`,
-      v.order && `Order: ${v.order}`,
-      v.date && `For: ${v.date}`,
-      v.area && `Area: ${v.area}`,
-      v.name && `I'm ${v.name}`,
+      p.hello,
+      v.order && `${p.order} ${v.order}`,
+      v.date && `${p.date} ${v.date}`,
+      v.area && `${p.area} ${v.area}`,
+      v.name && `${p.name} ${v.name}`,
     ].filter(Boolean);
     fast.href = lines.length > 1 ? whatsappLink(lines.join('\n')) : whatsappLink();
   };

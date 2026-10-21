@@ -6,7 +6,8 @@ export const copy = {
     title: 'Mary And Kitchen · Homemade bakes in the UAE',
     description:
       'Fudgy brownies, oat revel bars and 4-inch square cakes, baked by Mary in her kitchen. Boxes of 10, order 12 hours ahead, delivery across the UAE.',
-    ogAlt: 'Mary the cartoon chef holding a tray of brownies and oat revel bars',
+    ogAlt:
+      'Mary And Kitchen: Mary the cartoon chef holding a tray of brownies and oat revel bars, between photos of a box of brownies and a box of oat revel bars',
   },
   a11y: {
     skip: 'Skip to the good stuff',
@@ -42,7 +43,7 @@ export const copy = {
       { key: 'oat-base', name: 'Rolled-oat cookie base', detail: 'Holds the whole thing together' },
     ],
     badgeAlt: 'Made with real oats',
-    photoAlt: 'Oat revel bars from above, fresh from the tray',
+    photoAlt: 'Oat revel bars from above in an open pink box',
     photoCaption: 'The real ones, straight off my tray',
     whatsapp: 'Hiii Mary! Can I save a box of 10 oat revel bars? 🍫',
   },
@@ -55,6 +56,7 @@ export const copy = {
     showPhoto: 'Show the photo of',
     showDrawing: 'Show the drawing of',
     bestseller: 'Bestseller',
+    stampAlt: 'Baked by hand, made with heart',
     currency: 'AED',
   },
   kitchens: {
@@ -79,8 +81,8 @@ export const copy = {
     steps: [
       { title: 'Message me', text: "Say hi on WhatsApp and tell me what you're craving." },
       { title: 'I bake it', text: 'Order 12 hours ahead, so it comes out of my oven just for you.' },
-      { title: 'Boxed in tens', text: 'Everything goes into a pink box of 10.' },
-      { title: 'At your door', text: 'Delivered anywhere in the UAE.' },
+      { title: 'Boxed in tens', text: 'My bakes go into a pink box of 10.' },
+      { title: 'At your door', text: 'Delivery across the UAE.' },
     ],
   },
   loveNotes: {
@@ -101,7 +103,7 @@ export const copy = {
       area: 'Where in the UAE?',
       areaHint: 'Dubai Marina, Abu Dhabi, Sharjah…',
     },
-    aheadNote: 'Please order at least 12 hours ahead.',
+    aheadNote: 'Order 12 hours ahead.',
     submit: 'Ring the bell',
     sending: 'Ringing…',
     successTitle: "Yesss, you're on my list!",
@@ -110,6 +112,29 @@ export const copy = {
     invalid: 'Almost! Please check the highlighted bits.',
     faster: 'In a hurry? WhatsApp is faster',
     fasterLine: 'Same order, straight to my phone.',
+    fasterButton: 'WhatsApp',
+    honeypot: 'Website',
+    /** The order slip as a WhatsApp message (scripts/order-form.ts). */
+    prefill: {
+      hello: "Hiii Mary! I'd love to order 💕",
+      order: 'Order:',
+      date: 'For:',
+      area: 'Area:',
+      name: "I'm",
+    },
+    backHome: 'Back to my kitchen',
+  },
+  /** The email Mary gets for each order slip (pages/api/order.ts). */
+  orderEmail: {
+    subject: 'New order request from',
+    heading: 'New order request!',
+    intro: 'New order request from the website!',
+    name: 'Name',
+    phone: 'WhatsApp',
+    date: 'Needed on',
+    area: 'Area',
+    wants: 'What they want:',
+    reply: 'Reply on WhatsApp',
   },
   apron: {
     title: 'See you soon!',
@@ -120,7 +145,8 @@ export const copy = {
     rights: 'Mary And Kitchen',
   },
   nav: {
-    home: 'Mary And Kitchen, back to the top',
+    label: 'Main',
+    home:'Mary And Kitchen, back to the top',
     menu: 'Menu',
     order: 'Order',
     progress: 'Page progress',

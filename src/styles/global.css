@@ -34,6 +34,9 @@
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    /* Phones size the layout viewport to any overflow (box lids, mascots that
+       peek past their boxes); clipping only <body> didn't stop the sideways pan. */
+    overflow-x: clip;
   }
   body {
     min-block-size: 100dvh;
