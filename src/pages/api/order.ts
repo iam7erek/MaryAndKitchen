@@ -7,6 +7,9 @@
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 import { RESEND_API_KEY, ORDER_FROM_EMAIL, ORDER_TO_EMAIL } from 'astro:env/server';
+import { copy } from '../../data/copy.en';
+
+const t = copy.orderEmail;
 
 export const prerender = false;
 
@@ -54,26 +57,26 @@ function waLink(phone: string): string {
 
 function emailBodies(o: Order) {
   const rows: [string, string][] = [
-    ['Name', o.name],
-    ['WhatsApp', o.phone],
-    ['Needed on', o.date],
-    ['Area', o.area],
+    [t.name, o.name],
+    [t.phone, o.phone],
+    [t.date, o.date],
+    [t.area, o.area],
   ];
   const text = [
-    'New order request from the website!',
+    t.intro,
     '',
     ...rows.map(([k, v]) => `${k}: ${v}`),
     '',
-    'What they want:',
+    t.wants,
     o.order,
     '',
-    `Reply on WhatsApp: ${waLink(o.phone)}`,
+    `${t.reply}: ${waLink(o.phone)}`,
   ].join('\n');
 
   const html = `
   <div style="font-family:Nunito,Arial,sans-serif;background:#FFF5EA;padding:24px;color:#3F241E">
     <div style="max-width:520px;margin:0 auto;background:#FFFDF9;border:3px solid #3F241E;border-radius:16px;padding:24px">
-      <h1 style="margin:0 0 16px;font-family:Georgia,serif;font-style:italic;color:#D9577F">New order request!</h1>
+      <h1 style="margin:0 0 16px;font-family:Georgia,serif;font-style:italic;color:#D9577F">${t.heading}</h1>
       <table style="border-collapse:collapse;width:100%">
         ${rows
           .map(
@@ -82,9 +85,9 @@ function emailBodies(o: Order) {
           )
           .join('')}
       </table>
-      <p style="margin:16px 0 6px;font-weight:800">What they want:</p>
+      <p style="margin:16px 0 6px;font-weight:800">${t.wants}</p>
       <p style="margin:0;white-space:pre-wrap;background:#FBD5E0;border-radius:12px;padding:12px">${escape(o.order)}</p>
-      <p style="margin:20px 0 0"><a href="${waLink(o.phone)}" style="display:inline-block;background:#EF7FA5;color:#3F241E;border:3px solid #3F241E;border-radius:999px;padding:10px 18px;font-weight:900;text-decoration:none">Reply on WhatsApp</a></p>
+      <p style="margin:20px 0 0"><a href="${waLink(o.phone)}" style="display:inline-block;background:#EF7FA5;color:#3F241E;border:3px solid #3F241E;border-radius:999px;padding:10px 18px;font-weight:900;text-decoration:none">${t.reply}</a></p>
     </div>
   </div>`;
   return { text, html };
@@ -129,7 +132,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   const { error } = await resend.emails.send({
     from: ORDER_FROM_EMAIL || 'Mary And Kitchen <onboarding@resend.dev>',
     to: [ORDER_TO_EMAIL],
-    subject: `New order request from ${order.name}`,
+    subject: `${t.subject} ${order.name}`,
     text,
     html,
   });
