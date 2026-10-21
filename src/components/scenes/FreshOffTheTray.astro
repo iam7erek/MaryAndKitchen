@@ -11,7 +11,6 @@ import Scene from '../ui/Scene.astro';
 import { copy } from '../../data/copy.en';
 import { products } from '../../data/products';
 import maryTray from '../../assets/brand/mascot/mary-bestseller-tray.svg';
-import seal from '../../assets/brand/stamps/seal-cocoa.svg';
 import stamp from '../../assets/brand/stamps/stamp-baked-by-hand.svg';
 
 const t = copy.tray;
@@ -28,9 +27,7 @@ const t = copy.tray;
     <div class="tray" data-viewport>
       <ul class="tray__track" data-track>
         <li class="tray__mary" aria-hidden="true">
-          <Image src={maryTray} alt="" class="tray__mary-img" />
-          <Image src={seal} alt="" class="tray__seal" />
-        </li>
+          <Image src={maryTray} alt="" class="tray__mary-img" />        </li>
         <li class="tray__stamp" data-stamp>
           <Image src={stamp} alt={t.stampAlt} class="tray__stamp-img" />
         </li>
@@ -138,13 +135,6 @@ const t = copy.tray;
     scroll-snap-align: start;
   }
   .tray__mary :global(.tray__mary-img) { inline-size: 100%; }
-  .tray__mary :global(.tray__seal) {
-    position: absolute;
-    inset-inline-end: -1rem;
-    inset-block-start: 0;
-    inline-size: 4.5rem;
-    transform: rotate(12deg);
-  }
 
   /* "Baked by hand" sticker stuck over the tray's top rim (pops in via tray.ts). */
   .tray__stamp {
