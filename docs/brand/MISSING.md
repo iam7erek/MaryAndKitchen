@@ -58,7 +58,6 @@ All logo, wordmark, lockup, seal, pattern, element and icon colors (fills, rings
 In the canvas, `seal-cocoa` ("…MADE WITH HEART · ♥ ·") and `sticker-thank-you` ("by Mary ♥") use a ♥ character. Nunito has no ♥, so the canvas showed a **system fallback font**. That glyph isn't brand artwork and can't be outlined from the brand fonts, so both files use the **brand heart shape** (`elements/heart.svg` path) at the same size and position.
 
 ## 3. Things exported exactly as the canvas shows them (worth fixing on the canvas)
-- **`stamp-baked-by-hand.svg`:** the ring text is longer than the circle, so in the canvas "HEART" is cut to "HEA" and runs into "BAKED". It's exported exactly like that. Fix: shorten the text or reduce the letter-spacing on the canvas, then re-export.
 - **`seal-pink.svg`:** the canvas drops the final "·" after "THE UAE" because it runs past the end of the circle. Exported the same way.
 - **`seal-christmas-limited.svg`:** "Christmas" is wider than the disc and touches the ring, as on the canvas.
 - **`seal-wordmark-cream.svg`:** "AND KITCHEN" sits tight against the descender of the "y", as on the canvas (line-height 0.9).
