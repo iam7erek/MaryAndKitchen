@@ -12,6 +12,7 @@ import { copy } from '../../data/copy.en';
 import { products } from '../../data/products';
 import maryTray from '../../assets/brand/mascot/mary-bestseller-tray.svg';
 import seal from '../../assets/brand/stamps/seal-cocoa.svg';
+import stamp from '../../assets/brand/stamps/stamp-baked-by-hand.svg';
 
 const t = copy.tray;
 ---
@@ -29,6 +30,9 @@ const t = copy.tray;
         <li class="tray__mary" aria-hidden="true">
           <Image src={maryTray} alt="" class="tray__mary-img" />
           <Image src={seal} alt="" class="tray__seal" />
+        </li>
+        <li class="tray__stamp" data-stamp>
+          <Image src={stamp} alt={t.stampAlt} class="tray__stamp-img" />
         </li>
         {
           products.map((p) => (
@@ -110,6 +114,7 @@ const t = copy.tray;
   .tray::-webkit-scrollbar { display: none; }
 
   .tray__track {
+    position: relative;
     display: flex;
     gap: clamp(1rem, 0.5rem + 2vw, 2rem);
     inline-size: max-content;
@@ -139,6 +144,20 @@ const t = copy.tray;
     inset-block-start: 0;
     inline-size: 4.5rem;
     transform: rotate(12deg);
+  }
+
+  /* "Baked by hand" sticker stuck over the tray's top rim (pops in via tray.ts). */
+  .tray__stamp {
+    position: absolute;
+    z-index: 2;
+    inset-block-start: -2.25rem;
+    inset-inline-start: 2.5rem;
+    inline-size: 4.5rem;
+    transform: rotate(-10deg);
+  }
+  .tray__stamp :global(.tray__stamp-img) {
+    inline-size: 100%;
+    filter: drop-shadow(2px 3px 0 color-mix(in srgb, var(--color-cocoa) 25%, transparent));
   }
 
   /* ---------- One bake ---------- */
