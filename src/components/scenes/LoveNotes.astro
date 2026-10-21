@@ -1,20 +1,16 @@
 ---
 /**
- * Scene 6: Love Notes. Real customer messages as WhatsApp-style bubbles and
- * sticky notes held on Mary's fridge by brand magnets, gently swaying.
+ * Scene 6: Love Notes. Real customer messages pinned to Mary's pink fridge
+ * by product magnets (Ali's design, components/fridge/LoveNotesFridge.astro).
  * Ships with [REAL MESSAGE] placeholders from src/data/loveNotes.ts.
  */
-import { Image } from 'astro:assets';
 import Scene from '../ui/Scene.astro';
+import LoveNotesFridge from '../fridge/LoveNotesFridge.astro';
 import { copy } from '../../data/copy.en';
 import { loveNotes } from '../../data/loveNotes';
-import heart from '../../assets/brand/elements/heart.svg';
-import square from '../../assets/brand/elements/square.svg';
-import sticker from '../../assets/brand/stamps/sticker-thank-you.svg';
 
 const t = copy.loveNotes;
-const magnets = [heart, square];
-const tilts = [-3, 2.5, -1.5, 3, -2.5, 1.5];
+const notes = loveNotes.map((note) => ({ message: note.text, name: note.from }));
 ---
 
 <Scene id="love-notes" tone="cream" labelledby="love-title" class="love">
@@ -24,25 +20,7 @@ const tilts = [-3, 2.5, -1.5, 3, -2.5, 1.5];
     <p class="love__line">{t.line}</p>
   </header>
 
-  <div class="fridge">
-    <span class="fridge__handle" aria-hidden="true"></span>
-    <Image src={sticker} alt="" class="fridge__sticker" />
-    <ul class="fridge__notes">
-      {
-        loveNotes.map((note, i) => (
-          <li class:list={['note', `note--${note.kind}`]} style={`--tilt: ${tilts[i % tilts.length]}deg; --delay: ${-i * 0.7}s`}>
-            <Image src={magnets[i % magnets.length]} alt="" class="note__magnet" />
-            <figure class="note__body">
-              <blockquote class="note__text">
-                <p>{note.text}</p>
-              </blockquote>
-              {note.from && <figcaption class="note__from">{note.from}</figcaption>}
-            </figure>
-          </li>
-        ))
-      }
-    </ul>
-  </div>
+  <LoveNotesFridge notes={notes} />
 </Scene>
 
 <style>
@@ -56,93 +34,4 @@ const tilts = [-3, 2.5, -1.5, 3, -2.5, 1.5];
   .love__eyebrow { color: var(--color-red-velvet); }
   .love__title { font-size: var(--text-headline); color: var(--color-rose); }
   .love__line { font-size: var(--text-lead); }
-
-  /* The fridge door */
-  .fridge {
-    position: relative;
-    max-inline-size: 60rem;
-    margin-inline: auto;
-    padding: 4rem clamp(1rem, 0.5rem + 3vw, 3rem) clamp(2rem, 1rem + 4vw, 3.5rem);
-    border-radius: 2.5rem;
-    background: var(--color-paper);
-    border: var(--border-line) solid var(--color-cocoa);
-  }
-  /* A chunky horizontal fridge handle on two little mounts (decoration). */
-  .fridge__handle {
-    position: absolute;
-    inset-block-start: 1.1rem;
-    inset-inline-start: 50%;
-    inline-size: min(10rem, 40%);
-    block-size: 0.95rem;
-    translate: -50% 0;
-    border-radius: var(--radius-pill);
-    background: var(--color-blush);
-    border: var(--border-line) solid var(--color-cocoa);
-  }
-  .fridge__handle::before,
-  .fridge__handle::after {
-    content: '';
-    position: absolute;
-    inset-block-start: 100%;
-    inline-size: 0.8rem;
-    block-size: 0.7rem;
-    background: var(--color-cocoa);
-    border-radius: 0 0 4px 4px;
-  }
-  .fridge__handle::before { inset-inline-start: 12%; }
-  .fridge__handle::after { inset-inline-end: 12%; }
-  .fridge :global(.fridge__sticker) {
-    position: absolute;
-    inset-inline-start: -1rem;
-    inset-block-end: -1.5rem;
-    inline-size: clamp(7rem, 5rem + 8vw, 10rem);
-    transform: rotate(-8deg);
-  }
-
-  .fridge__notes {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: clamp(1.25rem, 0.75rem + 2vw, 2rem);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .note {
-    position: relative;
-    inline-size: min(100%, 15rem);
-    transform-origin: 50% 0;
-    rotate: var(--tilt);
-    animation: sway 5.5s ease-in-out var(--delay) infinite alternate;
-  }
-  @keyframes sway {
-    from { transform: rotate(-1.2deg); }
-    to { transform: rotate(1.2deg); }
-  }
-  .note :global(.note__magnet) {
-    position: absolute;
-    z-index: 1;
-    inset-inline-start: 50%;
-    inset-block-start: -0.9rem;
-    inline-size: 1.75rem;
-    translate: -50% 0;
-  }
-  .note__body { margin: 0; padding: 1.25rem 1.1rem 1rem; display: grid; gap: 0.6rem; }
-  .note__text { margin: 0; font-weight: 700; }
-  .note__from { font-family: var(--font-display); font-variation-settings: 'SOFT' 100; font-style: italic; font-weight: 600; }
-
-  /* WhatsApp-style bubble */
-  .note--bubble .note__body {
-    border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 0.4rem;
-    background: var(--color-blush);
-    border: var(--border-line) solid var(--color-cocoa);
-  }
-  /* Sticky note */
-  .note--sticky .note__body {
-    border-radius: 0.4rem;
-    background: var(--color-cream);
-    border: var(--border-line) solid var(--color-cocoa);
-    box-shadow: 4px 5px 0 var(--color-biscuit);
-  }
 </style>
